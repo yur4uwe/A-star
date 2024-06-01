@@ -108,6 +108,7 @@ namespace A_star
                 Math.Min(8 * this.Width / 10, 12 * this.Height / 15)
             );
 
+            InitializeBitmaps();
             DrawCells();
             DrawGrid();
             panel1.Invalidate();
