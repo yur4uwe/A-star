@@ -363,13 +363,17 @@ namespace A_star
             public double g;
             public double h;
             public int type;
+            public int parent_x;
+            public int parent_y;
 
-            public Cell(int type = 0, double g = 0.0, double h = 0.0, double f = Double.MaxValue)
+            public Cell(int type = 0, double g = 0.0, double h = 0.0, double f = Double.MaxValue, int parent_x = -1, int parent_y = -1)
             {
                 this.type = type;
                 this.f = f;
                 this.g = g;
                 this.h = h;
+                this.parent_x = parent_x;
+                this.parent_y = parent_y;
             }
         }
         
@@ -409,6 +413,8 @@ namespace A_star
             cells[startEnd[0], startEnd[1]].f = 0.0;
             cells[startEnd[0], startEnd[1]].g = 0.0;
             cells[startEnd[0], startEnd[1]].h = 0.0;
+            cells[startEnd[0], startEnd[1]].parent_x = -1;
+            cells[startEnd[0], startEnd[1]].parent_y = -1;
 
             while (OpenList.Count > 0) 
             {
@@ -434,7 +440,10 @@ namespace A_star
                         if (newX == startEnd[2] && newY == startEnd[3]) 
                         {
                             form.DrawCell(x, y, newX, newY);
-                            MessageBox.Show("Destination Reached"); 
+                            MessageBox.Show("Destination Reached");
+                            cells[newX, newY].parent_x = x;
+                            cells[newX, newY].parent_y = y;
+                            BacktrackPath(newX, newY, form);
                             return; 
                         }
 
@@ -453,6 +462,8 @@ namespace A_star
                                 cells[newX, newY].f = newF;
                                 cells[newX, newY].g = newG;
                                 cells[newX, newY].h = newH;
+                                cells[newX, newY].parent_x = x;
+                                cells[newX, newY].parent_y = y;
 
                                 await Task.Delay(100);
                             }
@@ -471,6 +482,21 @@ namespace A_star
         private double GetHVal(int x, int y, int destX, int destY)
         {
             return Math.Sqrt(Math.Pow(x - destX, 2) + Math.Pow(y - destY, 2));
+        }
+
+        private void BacktrackPath(int endRow, int endCol, Form1 form)
+        {
+            int currRow = endRow;
+            int currCol = endCol;
+
+            while (cells[currRow, currCol].type != Form1.START)
+            {
+                int parentRow = cells[currRow, currCol].parent_x;
+                int parentCol = cells[currRow, currCol].parent_y;
+                form.DrawCell(currRow, currCol, parentRow, parentCol, Color.Blue);
+                currRow = parentRow;
+                currCol = parentCol;
+            }
         }
     }
 
