@@ -1,5 +1,19 @@
-﻿namespace A_star
+﻿using System.Windows.Forms;
+
+namespace A_star
 {
+    public class DoubleBufferedPanel : Panel
+    {
+        public DoubleBufferedPanel()
+        {
+            this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            this.SetStyle(ControlStyles.UserPaint, true);
+            this.UpdateStyles();
+        }
+    }
+
     partial class Form1
     {
         /// <summary>
@@ -28,21 +42,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.PathBtn = new System.Windows.Forms.Button();
+            this.panel1 = new DoubleBufferedPanel();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.GridSizeInp = new System.Windows.Forms.ToolStripTextBox();
+            this.resizeGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findShortestPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(132, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // panel1
             // 
@@ -54,46 +61,71 @@
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.panel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseClick);
             // 
-            // textBox1
+            // menuStrip1
             // 
-            this.textBox1.Location = new System.Drawing.Point(26, 12);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 0;
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.GridSizeInp,
+            this.resizeGridToolStripMenuItem,
+            this.findShortestPathToolStripMenuItem,
+            this.clearPathToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(894, 27);
+            this.menuStrip1.TabIndex = 2;
+            this.menuStrip1.Text = "menuStrip1";
             // 
-            // PathBtn
+            // GridSizeInp
             // 
-            this.PathBtn.Location = new System.Drawing.Point(705, 8);
-            this.PathBtn.Name = "PathBtn";
-            this.PathBtn.Size = new System.Drawing.Size(75, 23);
-            this.PathBtn.TabIndex = 2;
-            this.PathBtn.Text = "Find Path";
-            this.PathBtn.UseVisualStyleBackColor = true;
-            this.PathBtn.Click += new System.EventHandler(this.PathBtn_Click);
+            this.GridSizeInp.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.GridSizeInp.Name = "GridSizeInp";
+            this.GridSizeInp.Size = new System.Drawing.Size(100, 23);
+            // 
+            // resizeGridToolStripMenuItem
+            // 
+            this.resizeGridToolStripMenuItem.Name = "resizeGridToolStripMenuItem";
+            this.resizeGridToolStripMenuItem.Size = new System.Drawing.Size(76, 23);
+            this.resizeGridToolStripMenuItem.Text = "Resize Grid";
+            this.resizeGridToolStripMenuItem.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // findShortestPathToolStripMenuItem
+            // 
+            this.findShortestPathToolStripMenuItem.Name = "findShortestPathToolStripMenuItem";
+            this.findShortestPathToolStripMenuItem.Size = new System.Drawing.Size(115, 23);
+            this.findShortestPathToolStripMenuItem.Text = "Find Shortest Path";
+            this.findShortestPathToolStripMenuItem.Click += new System.EventHandler(this.PathBtn_Click);
+            // 
+            // clearPathToolStripMenuItem
+            // 
+            this.clearPathToolStripMenuItem.Name = "clearPathToolStripMenuItem";
+            this.clearPathToolStripMenuItem.Size = new System.Drawing.Size(73, 23);
+            this.clearPathToolStripMenuItem.Text = "Clear Path";
+            this.clearPathToolStripMenuItem.Click += new System.EventHandler(this.clearPathBtn_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(894, 853);
-            this.Controls.Add(this.PathBtn);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button PathBtn;
+        private DoubleBufferedPanel panel1;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripTextBox GridSizeInp;
+        private System.Windows.Forms.ToolStripMenuItem resizeGridToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findShortestPathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearPathToolStripMenuItem;
     }
 }

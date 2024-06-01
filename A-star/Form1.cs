@@ -14,8 +14,11 @@ namespace A_star
 {
     public partial class Form1 : Form
     {
-        private Bitmap drawingBitmap;
-        private List<List<int>> map;
+        private Bitmap baseBitmap;
+        private Bitmap gridBitmap;
+        private Bitmap cellBitmap;
+        private Bitmap pathBitmap;
+        private int[,] map;
         private int squares;
         private int[] startEnd;
 
@@ -27,53 +30,68 @@ namespace A_star
         public Form1()
         {
             InitializeComponent();
-            drawingBitmap = new Bitmap(panel1.Width, panel1.Height);
+            InitializeBitmaps();
+        }
+
+        private void InitializeBitmaps()
+        {
+
+            int width = panel1.Width;
+            int height = panel1.Height;
+
+            baseBitmap = new Bitmap(width, height);
+
+            gridBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (Graphics g = Graphics.FromImage(gridBitmap))
+            {
+                g.Clear(Color.Transparent);
+            }
+
+            cellBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (Graphics g = Graphics.FromImage(cellBitmap))
+            {
+                g.Clear(Color.Transparent);
+            }
+
+            pathBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (Graphics g = Graphics.FromImage(pathBitmap))
+            {
+                g.Clear(Color.Transparent);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            try { squares = Convert.ToInt32(textBox1.Text); }
+            ClearPath();
+            try { squares = Convert.ToInt32(GridSizeInp.Text); }
             catch (FormatException)
             {
                 MessageBox.Show("Invalid number of squares input");
                 return;
             }
 
-            map = new List<List<int>>(squares);
+            map = new int[squares, squares];
 
             for (int i = 0; i < squares; ++i)
             {
-                map.Add(new List<int>(squares));
-                for(int j = 0; j < squares; ++j)
+                for (int j = 0; j < squares; ++j)
                 {
-                    map[i].Add(SPACE);
+                    map[i, j] = 0;
                 }
             }
 
             DrawGrid();
+            DrawCells();
+            panel1.Invalidate();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            textBox1.Text = "1";
-            squares = Convert.ToInt32(textBox1.Text);
-            startEnd = new int[4];
+            GridSizeInp.Text = "1";
+            squares = Convert.ToInt32(GridSizeInp.Text);
+            startEnd = new int[4] { -1, -1, -1, -1 };
 
-            for(int i = 0; i < startEnd.Length; ++i)
-            {
-                startEnd[i] = -1;
-            }
-
-            map = new List<List<int>>(squares);
-
-            for (int i = 0; i < squares; ++i)
-            {
-                map.Add(new List<int>(squares));
-                for (int j = 0; j < squares; ++j)
-                {
-                    map[i].Add(SPACE);
-                }
-            }
+            map = new int[,] { { 0 } };
 
             this.Size = new System.Drawing.Size(800, 800);
         }
@@ -82,28 +100,39 @@ namespace A_star
 
         private void Form1_Resize(object sender, EventArgs e)
         {
+            ClearPath();
             panel1.Top = this.Height / 10;
             panel1.Left = this.Width / 15;
             panel1.Size = new System.Drawing.Size(
-                Math.Min(8 * this.Width / 10, 12 * this.Height / 15), 
+                Math.Min(8 * this.Width / 10, 12 * this.Height / 15),
                 Math.Min(8 * this.Width / 10, 12 * this.Height / 15)
             );
-            
+
+            DrawCells();
             DrawGrid();
+            panel1.Invalidate();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImage(drawingBitmap, Point.Empty);
+            Graphics g = e.Graphics;
+
+            // Draw images without using 'using' statement
+            g.DrawImage(baseBitmap, 0, 0);
+            g.DrawImage(gridBitmap, 0, 0);
+            g.DrawImage(cellBitmap, 0, 0);
+            g.DrawImage(pathBitmap, 0, 0);
         }
+
 
         private void panel1_MouseClick(object sender, MouseEventArgs e)
         {
+            ClearPath();
             int x = e.X;
             int y = e.Y;
 
             int square_l;
-            if (!int.TryParse(textBox1.Text, out square_l) || square_l <= 0)
+            if (!int.TryParse(GridSizeInp.Text, out square_l) || square_l <= 0)
             {
                 MessageBox.Show("Please enter a valid positive integer in the text box.");
                 return;
@@ -112,40 +141,40 @@ namespace A_star
             int gridSize = panel1.Width / square_l;
 
             int square_top = y / gridSize;
-            int square_left = x / gridSize;            
+            int square_left = x / gridSize;
 
-            using (Graphics g = Graphics.FromImage(drawingBitmap))
+            using (Graphics g = Graphics.FromImage(cellBitmap))
             {
                 Pen pen = new Pen(Color.Blue, 10);
                 Brush brush = new SolidBrush(Color.Red);
 
-                if(e.Button == MouseButtons.Left) 
+                if (e.Button == MouseButtons.Left)
                 {
-                    if (map[square_top][square_left] == OBSTACLE)
+                    if (map[square_top, square_left] == OBSTACLE)
                     {
-                        map[square_top][square_left] = SPACE;
-                        DrawGrid();
+                        map[square_top, square_left] = SPACE;
+                        DrawCells();
                         return;
                     }
-                    else if(map[square_top][square_left] == START)
+                    else if (map[square_top, square_left] == START)
                     {
                         startEnd[0] = startEnd[1] = -1;
                     }
-                    else if(map[square_top][square_left] == END)
+                    else if (map[square_top, square_left] == END)
                     {
                         startEnd[2] = startEnd[3] = -1;
                     }
-                    
+
                     g.FillRectangle(brush, new Rectangle(
                         new Point(gridSize * square_left, gridSize * square_top),
                         new Size(gridSize, gridSize)
                     ));
 
-                    map[square_top][square_left] = OBSTACLE;
+                    map[square_top, square_left] = OBSTACLE;
                 }
-                else if(e.Button == MouseButtons.Right) 
+                else if (e.Button == MouseButtons.Right)
                 {
-                    if (map[square_top][square_left] == OBSTACLE)
+                    if (map[square_top, square_left] == OBSTACLE)
                         return;
                     Panel panel = new Panel();
                     panel.Location = new Point(gridSize * square_left, gridSize * square_top);
@@ -172,7 +201,7 @@ namespace A_star
         private void Panel_MouseClick(object sender, MouseEventArgs e)
         {
             int squareSize;
-            if (!int.TryParse(textBox1.Text, out squareSize) || squareSize <= 0)
+            if (!int.TryParse(GridSizeInp.Text, out squareSize) || squareSize <= 0)
             {
                 MessageBox.Show("Please enter a valid positive integer in the text box.");
                 return;
@@ -186,115 +215,57 @@ namespace A_star
 
             if (e.Button == MouseButtons.Left) // Set start point
             {
-                if(startEnd[0] == row && startEnd[1] == col) //Erase start point if pressed twice 
+                if (startEnd[0] == row && startEnd[1] == col) //Erase start point if pressed twice 
                 {
-                    map[startEnd[0]][startEnd[1]] = SPACE;
+                    map[startEnd[0], startEnd[1]] = SPACE;
                     startEnd[0] = startEnd[1] = -1;
                 }
                 else
                 {
                     if (startEnd[0] != -1) //check if we need to erase previous start point
                     {
-                        map[startEnd[0]][startEnd[1]] = SPACE;
+                        map[startEnd[0], startEnd[1]] = SPACE;
                     }
                     startEnd[0] = row;
                     startEnd[1] = col;
-                    map[row][col] = START;
+                    map[row, col] = START;
                 }
             }
             else if (e.Button == MouseButtons.Right) // Set end point
             {
                 if (startEnd[2] == row && startEnd[3] == col) //Erase end point if pressed twice 
                 {
-                    map[startEnd[2]][startEnd[3]] = SPACE;
+                    map[startEnd[2], startEnd[3]] = SPACE;
                     startEnd[2] = startEnd[3] = -1;
                 }
                 else
                 {
                     if (startEnd[2] != -1) //check if we need to erase previous end point
                     {
-                        map[startEnd[2]][startEnd[3]] = 0;
+                        map[startEnd[2], startEnd[3]] = 0;
                     }
                     startEnd[2] = row;
                     startEnd[3] = col;
-                    map[row][col] = END;
+                    map[row, col] = END;
                 }
             }
-            
+
             panel1.Controls.Clear();
-            DrawGrid();
+            DrawCells();
+            panel1.Invalidate();
         }
 
         private void Panel_MouseLeave(object sender, EventArgs e)
         { panel1.Controls.Clear(); }
 
-        private void DrawGrid()
+        private void DrawCells()
         {
-            // Initialize a new bitmap to clear previous drawings
-            drawingBitmap = new Bitmap(panel1.Width, panel1.Height);
-
-            using (Graphics g = Graphics.FromImage(drawingBitmap))
+            using (Graphics g = Graphics.FromImage(cellBitmap))
             {
-                Pen pen = new Pen(Color.Blue, 2); // Reduced pen width for grid lines
-                Brush brush = new SolidBrush(Color.Red);
+                g.Clear(Color.Transparent);
 
                 int squares;
-                try
-                {
-                    squares = Convert.ToInt32(textBox1.Text);
-                }
-                catch (FormatException)
-                {
-                    MessageBox.Show("Invalid number of squares input");
-                    return;
-                }
-
-                int px_per_sq = panel1.Width / squares;
-
-                // Draw vertical and horizontal grid lines
-                for (int i = 0; i <= squares; ++i)
-                {
-                    g.DrawLine(pen, new Point(i * px_per_sq, 0), new Point(i * px_per_sq, panel1.Height));
-                    g.DrawLine(pen, new Point(0, i * px_per_sq), new Point(panel1.Width, i * px_per_sq));
-                }
-
-                // Fill the rectangles based on the map
-                for (int i = 0; i < squares; ++i)
-                {
-                    for (int j = 0; j < squares; ++j)
-                    {
-                        if (map[i][j] == 1)
-                        {
-                            g.FillRectangle(brush, new Rectangle(
-                                new Point(j * px_per_sq, i * px_per_sq), // Corrected the x, y coordinates
-                                new Size(px_per_sq, px_per_sq)
-                            ));
-                        }
-                    }
-                }
-
-                DrawStartEnd(startEnd[0], startEnd[1], Color.Green);
-                DrawStartEnd(startEnd[2], startEnd[3], Color.Red);
-
-                pen.Dispose();
-                brush.Dispose();
-            }
-
-            // Invalidate the panel to force a repaint
-            panel1.Invalidate();
-        }
-
-        private void DrawStartEnd(int row, int col, Color color)
-        {
-            using (Graphics g = Graphics.FromImage(drawingBitmap))
-            {
-                Brush brush = new SolidBrush(color);
-
-                int squares;
-                try
-                {
-                    squares = Convert.ToInt32(textBox1.Text);
-                }
+                try { squares = Convert.ToInt32(GridSizeInp.Text); }
                 catch (FormatException)
                 {
                     MessageBox.Show("Invalid number of squares input");
@@ -302,28 +273,65 @@ namespace A_star
                 }
 
                 int squareSize = panel1.Width / squares;
-                g.FillEllipse(brush, new Rectangle(
-                    new Point(col * squareSize + squareSize / 4, row * squareSize + squareSize / 4),
-                    new Size(squareSize / 2, squareSize / 2)
-                ));
-                brush.Dispose();
-            }
 
+                if (startEnd[0] != -1)
+                    g.FillEllipse(new SolidBrush(Color.Green), new Rectangle(
+                        new Point(startEnd[1] * squareSize + squareSize / 4, startEnd[0] * squareSize + squareSize / 4),
+                        new Size(squareSize / 2, squareSize / 2)
+                    ));
+                if (startEnd[2] != -1)
+                    g.FillEllipse(new SolidBrush(Color.Red), new Rectangle(
+                        new Point(startEnd[3] * squareSize + squareSize / 4, startEnd[2] * squareSize + squareSize / 4),
+                        new Size(squareSize / 2, squareSize / 2)
+                    ));
+
+                for (int i = 0; i < squares; ++i)
+                {
+                    for (int j = 0; j < squares; ++j)
+                    {
+                        if (map[i, j] == 1)
+                        {
+                            g.FillRectangle(new SolidBrush(Color.Red), new Rectangle(
+                                new Point(j * squareSize, i * squareSize), // Corrected the x, y coordinates
+                                new Size(squareSize, squareSize)
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawGrid()
+        {
+            using (Graphics g = Graphics.FromImage(gridBitmap))
+            {
+                g.Clear(Color.Transparent);
+                Pen pen = new Pen(Color.Blue, 2);
+                int px_per_sq = panel1.Width / squares;
+
+                for (int i = 0; i <= squares; ++i)
+                {
+                    g.DrawLine(pen, new Point(i * px_per_sq, 0), new Point(i * px_per_sq, panel1.Height));
+                    g.DrawLine(pen, new Point(0, i * px_per_sq), new Point(panel1.Width, i * px_per_sq));
+                }
+            }
+        }
+
+        private void ClearPath()
+        {
+            using (Graphics graphics = Graphics.FromImage(pathBitmap)) { graphics.Clear(Color.Transparent); }
             panel1.Invalidate();
         }
 
-        public void DrawCell(int y, int x, int y1, int x1, Color color = default(Color))
+        public void DrawCell(int y, int x, int y1, int x1, Color? color = null)
         {
-            if (color == default(Color))
-            {
-                color = Color.Green;
-            }
+            Color actualColor = color ?? Color.Green;
 
-            int square_l = panel1.Width / map.Count;
+            int square_l = (int)(panel1.Width / Math.Sqrt(map.Length));
 
-            using (Graphics g = Graphics.FromImage(drawingBitmap))
+            using (Graphics g = Graphics.FromImage(pathBitmap))
             {
-                Pen pen = new Pen(color, 10);
+                Pen pen = new Pen(actualColor, 10);
                 g.DrawLine(pen,
                     new Point(x * square_l + square_l / 2, y * square_l + square_l / 2),
                     new Point(x1 * square_l + square_l / 2, y1 * square_l + square_l / 2)
@@ -335,22 +343,15 @@ namespace A_star
 
         private async void PathBtn_Click(object sender, EventArgs e)
         {
-            if (startEnd[0] < 0)
-            {
-                MessageBox.Show("Choose start point");
-                return;
-            }
-            else if (startEnd[2] < 0)
-            {
-                MessageBox.Show("Choose end point");
-                return;
-            }
+            ClearPath();
 
-            DrawGrid();
-            
             PathFinder pathFinder = new PathFinder(map);
-
             await pathFinder.FindPath(startEnd, this);
+        }
+
+        private void clearPathBtn_Click(object sender, EventArgs e)
+        {
+            ClearPath();
         }
     }
 
@@ -379,17 +380,16 @@ namespace A_star
         private int ROW;
         private int COL;
 
-        public PathFinder(List<List<int>> map) 
+        public PathFinder(int[,] map) 
         {
-            ROW = map.Count;
-            COL = map[0].Count;
+            ROW = COL = (int)Math.Sqrt(map.Length);
 
             cells = new Cell[ROW, COL];
             for (int i = 0; i < ROW; i++)
             {
                 for (int j = 0; j < COL; j++)
                 {
-                    cells[i, j] = new Cell(map[i][j]);
+                    cells[i, j] = new Cell(map[i, j]);
                 }
             }
 
@@ -454,7 +454,7 @@ namespace A_star
                                 cells[newX, newY].g = newG;
                                 cells[newX, newY].h = newH;
 
-                                await Task.Delay(400);
+                                await Task.Delay(100);
                             }
                         }
                     }
