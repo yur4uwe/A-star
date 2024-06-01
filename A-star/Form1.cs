@@ -312,29 +312,165 @@ namespace A_star
             panel1.Invalidate();
         }
 
-        public static void DrawCell(int x, int y)
+        public void DrawCell(int y, int x, int y1, int x1, Color color = default(Color))
         {
+            if (color == default(Color))
+            {
+                color = Color.Green;
+            }
 
+            int square_l = panel1.Width / map.Count;
+
+            using (Graphics g = Graphics.FromImage(drawingBitmap))
+            {
+                Pen pen = new Pen(color, 10);
+                g.DrawLine(pen,
+                    new Point(x * square_l + square_l / 2, y * square_l + square_l / 2),
+                    new Point(x1 * square_l + square_l / 2, y1 * square_l + square_l / 2)
+                );
+                pen.Dispose();
+            }
+            panel1.Invalidate(true);
         }
 
-        private void PathBtn_Click(object sender, EventArgs e)
+        private async void PathBtn_Click(object sender, EventArgs e)
         {
-            PathFinder pathFinder = new PathFinder();
+            if (startEnd[0] < 0)
+            {
+                MessageBox.Show("Choose start point");
+                return;
+            }
+            else if (startEnd[2] < 0)
+            {
+                MessageBox.Show("Choose end point");
+                return;
+            }
 
-            pathFinder.FindPath(map, startEnd);
+            DrawGrid();
+            
+            PathFinder pathFinder = new PathFinder(map);
+
+            await pathFinder.FindPath(startEnd, this);
         }
     }
 
     class PathFinder
     {
-        public PathFinder() 
+        private class Cell
         {
-            
+            public double f { get; set; }
+            public double g;
+            public double h;
+            public int type;
+
+            public Cell(int type = 0, double g = 0.0, double h = 0.0, double f = Double.MaxValue)
+            {
+                this.type = type;
+                this.f = f;
+                this.g = g;
+                this.h = h;
+            }
+        }
+        
+        private Cell[,] cells; //???
+        private SortedSet<(double, int, int)> OpenList;
+        private bool[,] CloseList;
+
+        private int ROW;
+        private int COL;
+
+        public PathFinder(List<List<int>> map) 
+        {
+            ROW = map.Count;
+            COL = map[0].Count;
+
+            cells = new Cell[ROW, COL];
+            for (int i = 0; i < ROW; i++)
+            {
+                for (int j = 0; j < COL; j++)
+                {
+                    cells[i, j] = new Cell(map[i][j]);
+                }
+            }
+
+            OpenList = new 
+                SortedSet<(double, int, int)>
+                (
+                    Comparer<(double, int, int)>.Create((a, b) => a.Item1.CompareTo(b.Item1))
+                );
+
+            CloseList = new bool[ROW, COL];
         }
 
-        public void FindPath(List<List<int>> map, int[] startEnd) //first will be BFS
+        public async Task FindPath(int[] startEnd, Form1 form) //now will be real A*
         {
-            
+            OpenList.Add((0.0, startEnd[0], startEnd[1]));
+
+            cells[startEnd[0], startEnd[1]].f = 0.0;
+            cells[startEnd[0], startEnd[1]].g = 0.0;
+            cells[startEnd[0], startEnd[1]].h = 0.0;
+
+            while (OpenList.Count > 0) 
+            {
+                (double f, int x, int y) p = OpenList.Min;
+                OpenList.Remove(p);
+
+                int x = p.x;
+                int y = p.y;
+
+                CloseList[x, y] = true;
+
+                for(int i = -1; i <= 1; i++)
+                {
+                    for(int j = -1; j <= 1; j++)
+                    {
+                        if (i == 0 && j == 0) continue;
+
+                        int newX = x + i;
+                        int newY = y + j;
+
+                        if(!Valid(newX, newY)) continue;
+
+                        if (newX == startEnd[2] && newY == startEnd[3]) 
+                        {
+                            form.DrawCell(x, y, newX, newY);
+                            MessageBox.Show("Destination Reached"); 
+                            return; 
+                        }
+
+                        if (!CloseList[newX, newY] && cells[newX, newY].type != Form1.OBSTACLE)
+                        {
+                            double newG = cells[x, y].g + 1.0;
+                            double newH = GetHVal(newX, newY, startEnd[2], startEnd[3]);
+                            double newF = newG + newH;
+
+                            if (cells[newX, newY].f > newF)
+                            {
+                                OpenList.Add((newF, newX, newY));
+
+                                form.DrawCell(x, y, newX, newY);
+
+                                cells[newX, newY].f = newF;
+                                cells[newX, newY].g = newG;
+                                cells[newX, newY].h = newH;
+
+                                await Task.Delay(400);
+                            }
+                        }
+                    }
+                }
+            }
+            MessageBox.Show("Destination not Reached");
+        }
+
+        private bool Valid(int x, int y)
+        {
+            return x >= 0 && y >= 0 && x < ROW && y < COL;
+        }
+
+        private double GetHVal(int x, int y, int destX, int destY)
+        {
+            return Math.Sqrt(Math.Pow(x - destX, 2) + Math.Pow(y - destY, 2));
         }
     }
 
