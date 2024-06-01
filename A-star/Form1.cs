@@ -327,60 +327,14 @@ namespace A_star
 
     class PathFinder
     {
-        private List<int[]> q;
-        private List<List<bool>> visited;
-
-
         public PathFinder() 
         {
-            q = new List<int[]>();
-            visited = new List<List<bool>>();
+            
         }
 
         public void FindPath(List<List<int>> map, int[] startEnd) //first will be BFS
         {
-            visited = new List<List<bool>>(map.Count);
-            for (int i = 0; i < map.Count; i++)
-            {
-                visited.Add(new List<bool>(map[0].Count));
-                for (int j = 0; j < map[0].Count; j++)
-                {
-                    visited[i].Add(false);
-                }
-            }
-
-            q.Add(new int[2] { startEnd[0], startEnd[1] });
-            visited[startEnd[0]][startEnd[1]] = true;
-
-            while(q.Count > 0)
-            {
-                for (int i = 0; i < q.Count; i++)
-                {
-                    int[] currCell = q[i];
-                    Form1.DrawCell(currCell[0], currCell[1]);
-
-                    if (currCell[0] > 0 && map[currCell[0] - 1][currCell[1]] != Form1.OBSTACLE)
-                    {
-                        q.Add(new int[2] { currCell[0] - 1, currCell[1] });
-                        visited[currCell[0] - 1][currCell[1]] = true;
-                    }
-                    if (currCell[0] < map.Count - 1 && map[currCell[0] + 1][currCell[1]] != Form1.OBSTACLE)
-                    {
-                        q.Add(new int[2] { currCell[0] + 1, currCell[1] });
-                        visited[currCell[0] + 1][currCell[1]] = true;
-                    }
-                    if (currCell[1] > 0 && map[currCell[0]][currCell[1] - 1] != Form1.OBSTACLE)
-                    {
-                        q.Add(new int[2] { currCell[0], currCell[1] - 1 });
-                        visited[currCell[0]][currCell[1] - 1] = true;
-                    }
-                    if (currCell[1] < map[0].Count - 1 && map[currCell[0]][currCell[1] + 1] != Form1.OBSTACLE)
-                    {
-                        q.Add(new int[2] { currCell[0], currCell[1] + 1 });
-                        visited[currCell[0]][currCell[1] + 1] = true;
-                    }
-                }
-            }
+            
         }
     }
 
