@@ -275,7 +275,7 @@ namespace A_star
             ClearPath();
 
             PathFindingAlg pathFinder = new PathFindingAlg(squares, squares, obstacles);
-            await pathFinder.FindPath(startEnd, this);
+            await pathFinder.A_Star(startEnd, this);
         }
 
         private void clearPathBtn_Click(object sender, EventArgs e)

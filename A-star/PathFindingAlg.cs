@@ -10,7 +10,7 @@ namespace A_star
 {
     internal class PathFindingAlg
     {
-        private class Cell
+        private class A_StCell
         {
             public double f { get; set; }
             public double g;
@@ -19,7 +19,7 @@ namespace A_star
             public int parent_x;
             public int parent_y;
 
-            public Cell(int type = Form1.SPACE, double g = 0.0, double h = 0.0, double f = Double.MaxValue, int parent_x = -1, int parent_y = -1)
+            public A_StCell(int type = Form1.SPACE, double g = 0.0, double h = 0.0, double f = Double.MaxValue, int parent_x = -1, int parent_y = -1)
             {
                 this.type = type;
                 this.f = f;
@@ -30,7 +30,7 @@ namespace A_star
             }
         }
 
-        private Cell[,] cells; //???
+        private A_StCell[,] cells; //???
         private SortedSet<(double, int, int)> OpenList;
         private bool[,] CloseList;
 
@@ -42,11 +42,11 @@ namespace A_star
             ROW = GridX;
             COL = GridY;
 
-            cells = new Cell[ROW, COL];
+            cells = new A_StCell[ROW, COL];
 
             foreach (var item in obstacles)
             {
-                cells[item.Item1, item.Item2] = new Cell(Form1.OBSTACLE);
+                cells[item.Item1, item.Item2] = new A_StCell(Form1.OBSTACLE);
             }
 
             OpenList = new
@@ -58,11 +58,11 @@ namespace A_star
             CloseList = new bool[ROW, COL];
         }
 
-        public async Task FindPath(int[] startEnd, Form1 form) //now will be real A*
+        public async Task A_Star(int[] startEnd, Form1 form) //now will be real A*
         {
             OpenList.Add((0.0, startEnd[0], startEnd[1]));
 
-            cells[startEnd[0], startEnd[1]] = new Cell(Form1.START, 0.0, 0.0, 0.0);
+            cells[startEnd[0], startEnd[1]] = new A_StCell(Form1.START, 0.0, 0.0, 0.0);
 
             while (OpenList.Count > 0)
             {
@@ -86,7 +86,7 @@ namespace A_star
                         if (!Valid(newX, newY)) continue;
 
                         if (cells[newX, newY] == null) 
-                            cells[newX, newY] = new Cell();
+                            cells[newX, newY] = new A_StCell();
 
                         if (newX == startEnd[2] && newY == startEnd[3])
                         {
@@ -123,6 +123,94 @@ namespace A_star
                 }
             }
             MessageBox.Show("Destination not Reached");
+        }
+
+        public async Task Dijkstra() { await Task.Delay(100); }
+
+        class Cell
+        {
+            public bool visited;
+            public int parent_x;
+            public int parent_y;
+            public int type;
+
+            public Cell(int type = 0, bool visited = false, int parent_x = -1, int parent_y = -1)
+            {
+                this.type = type;
+                this.visited = visited;
+                this.parent_x = parent_x;
+                this.parent_y = parent_y;
+            }
+        }
+        private List<int[]> q;
+        private Cell[,] map;
+
+        public async Task BFS(int[,] map, int[] startEnd, Form1 form) 
+        {
+            this.ROW = this.COL = (int)Math.Sqrt(map.Length);
+
+            this.q = new List<int[]>();
+            this.map = new Cell[ROW, COL];
+
+            for (int i = 0; i < ROW; ++i)
+            {
+                for (int j = 0; j < COL; ++j)
+                {
+                    this.map[i, j] = new Cell(map[i, j]);
+                }
+            }
+
+            int rows = ROW;
+            int cols = COL;
+
+            q.Add(new int[2] { startEnd[0], startEnd[1] });
+            this.map[startEnd[0], startEnd[1]] = new Cell(Form1.START, true, -1, -1);
+
+            while (q.Count > 0)
+            {
+                int[] currCell = q[0];
+                q.RemoveAt(0);
+
+                // Define directions for movement (down, up, right, left, and diagonals)
+                int[][] directions = new int[][]
+                {
+                new int[] { 1, 0 }, // down
+                new int[] { -1, 0 }, // up
+                new int[] { 0, 1 }, // right
+                new int[] { 0, -1 }, // left
+                new int[] { 1, 1 }, // down-right
+                new int[] { 1, -1 }, // down-left
+                new int[] { -1, 1 }, // up-right
+                new int[] { -1, -1 } // up-left
+                };
+
+                foreach (var dir in directions)
+                {
+                    int newRow = currCell[0] + dir[0];
+                    int newCol = currCell[1] + dir[1];
+
+                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && !map[newRow, newCol].visited && map[newRow, newCol].type != Form1.OBSTACLE)
+                    {
+                        map[newRow, newCol].visited = true;
+                        map[newRow, newCol].parent_x = currCell[0];
+                        map[newRow, newCol].parent_y = currCell[1];
+                        q.Add(new int[] { newRow, newCol });
+                        form.DrawCell(currCell[0], currCell[1], newRow, newCol);
+
+                        if (newRow == startEnd[2] && newCol == startEnd[3])
+                        {
+                            MessageBox.Show("Destination found");
+                            // Path found, backtrack to the start
+                            BacktrackPath(startEnd[2], startEnd[3], form);
+                            return;
+                        }
+
+                        await Task.Delay(100);
+                    }
+                }
+
+            }
+            MessageBox.Show("Destination not Found");
         }
 
         private bool Valid(int x, int y)
