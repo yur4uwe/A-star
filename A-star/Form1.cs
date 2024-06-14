@@ -19,13 +19,19 @@ namespace A_star
         private Bitmap cellBitmap;
         private Bitmap pathBitmap;
         private int[,] map;
+        private HashSet<(int, int)> obstacles;
         private int squares;
         private int[] startEnd;
+        private bool PLACE_OBSTACLE = true;
+        private bool PLACE_START;
+        private int GridX;
+        private int GridY;
 
-        public const int SPACE = 0;
-        public const int OBSTACLE = 1;
-        public const int START = 2;
-        public const int END = 3;
+        public const int SPACE = 100;
+        public const int OBSTACLE = 101;
+        public const int START = 102;
+        public const int END = 103;
+        
 
         public Form1()
         {
@@ -70,15 +76,7 @@ namespace A_star
                 return;
             }
 
-            map = new int[squares, squares];
-
-            for (int i = 0; i < squares; ++i)
-            {
-                for (int j = 0; j < squares; ++j)
-                {
-                    map[i, j] = 0;
-                }
-            }
+            GridX = GridY = squares;
 
             DrawGrid();
             DrawCells();
@@ -92,6 +90,8 @@ namespace A_star
             startEnd = new int[4] { -1, -1, -1, -1 };
 
             map = new int[,] { { 0 } };
+            obstacles = new HashSet<(int, int)>();
+            GridX = GridY = squares;
 
             this.Size = new System.Drawing.Size(800, 800);
         }
@@ -125,9 +125,10 @@ namespace A_star
             g.DrawImage(pathBitmap, 0, 0);
         }
 
-
         private void panel1_MouseClick(object sender, MouseEventArgs e)
         {
+            if(e.Button != MouseButtons.Left) return;
+
             ClearPath();
             int x = e.X;
             int y = e.Y;
@@ -149,115 +150,48 @@ namespace A_star
                 Pen pen = new Pen(Color.Blue, 10);
                 Brush brush = new SolidBrush(Color.Red);
 
-                if (e.Button == MouseButtons.Left)
+                if(PLACE_OBSTACLE)
                 {
-                    if (map[square_top, square_left] == OBSTACLE)
+                    if (obstacles.Contains((square_top, square_left)))
                     {
-                        map[square_top, square_left] = SPACE;
+                        obstacles.Remove((square_top, square_left));
                         DrawCells();
                         return;
                     }
-                    else if (map[square_top, square_left] == START)
+                    else if (startEnd[0] == square_top && startEnd[1] == square_left)
                     {
                         startEnd[0] = startEnd[1] = -1;
                     }
-                    else if (map[square_top, square_left] == END)
+                    else if (startEnd[2] == square_top && startEnd[3] == square_left)
                     {
                         startEnd[2] = startEnd[3] = -1;
                     }
 
-                    g.FillRectangle(brush, new Rectangle(
-                        new Point(gridSize * square_left, gridSize * square_top),
-                        new Size(gridSize, gridSize)
-                    ));
-
-                    map[square_top, square_left] = OBSTACLE;
+                    obstacles.Add((square_top, square_left));
                 }
-                else if (e.Button == MouseButtons.Right)
+                else
                 {
-                    if (map[square_top, square_left] == OBSTACLE)
-                        return;
-                    Panel panel = new Panel();
-                    panel.Location = new Point(gridSize * square_left, gridSize * square_top);
-                    panel.Width = gridSize;
-                    panel.Height = gridSize;
-                    panel.MouseClick += new System.Windows.Forms.MouseEventHandler(Panel_MouseClick);
-                    panel.MouseLeave += new System.EventHandler(Panel_MouseLeave);
+                    if(PLACE_START)
+                    {
+                        startEnd[0] = square_top;
+                        startEnd[1] = square_left;
+                    }
+                    else
+                    {
+                        startEnd[2] = square_top;
+                        startEnd[3] = square_left;
+                    }
 
-                    Label instructions = new Label();
-                    instructions.Text = "LMouseCl for start\nRMouseCl for end";
-                    instructions.AutoSize = true;
-
-                    panel.Controls.Add(instructions);
-                    panel1.Controls.Add(panel);
+                    PLACE_OBSTACLE = true;
                 }
 
                 pen.Dispose();
                 brush.Dispose();
             }
 
-            panel1.Invalidate();
-        }
-
-        private void Panel_MouseClick(object sender, MouseEventArgs e)
-        {
-            int squareSize;
-            if (!int.TryParse(GridSizeInp.Text, out squareSize) || squareSize <= 0)
-            {
-                MessageBox.Show("Please enter a valid positive integer in the text box.");
-                return;
-            }
-
-            Panel pnl = (Panel)sender;
-
-            int gridSize = panel1.Width / squareSize;
-            int row = pnl.Top / gridSize;
-            int col = pnl.Left / gridSize;
-
-            if (e.Button == MouseButtons.Left) // Set start point
-            {
-                if (startEnd[0] == row && startEnd[1] == col) //Erase start point if pressed twice 
-                {
-                    map[startEnd[0], startEnd[1]] = SPACE;
-                    startEnd[0] = startEnd[1] = -1;
-                }
-                else
-                {
-                    if (startEnd[0] != -1) //check if we need to erase previous start point
-                    {
-                        map[startEnd[0], startEnd[1]] = SPACE;
-                    }
-                    startEnd[0] = row;
-                    startEnd[1] = col;
-                    map[row, col] = START;
-                }
-            }
-            else if (e.Button == MouseButtons.Right) // Set end point
-            {
-                if (startEnd[2] == row && startEnd[3] == col) //Erase end point if pressed twice 
-                {
-                    map[startEnd[2], startEnd[3]] = SPACE;
-                    startEnd[2] = startEnd[3] = -1;
-                }
-                else
-                {
-                    if (startEnd[2] != -1) //check if we need to erase previous end point
-                    {
-                        map[startEnd[2], startEnd[3]] = 0;
-                    }
-                    startEnd[2] = row;
-                    startEnd[3] = col;
-                    map[row, col] = END;
-                }
-            }
-
-            panel1.Controls.Clear();
             DrawCells();
             panel1.Invalidate();
         }
-
-        private void Panel_MouseLeave(object sender, EventArgs e)
-        { panel1.Controls.Clear(); }
 
         private void DrawCells()
         {
@@ -286,18 +220,12 @@ namespace A_star
                         new Size(squareSize / 2, squareSize / 2)
                     ));
 
-                for (int i = 0; i < squares; ++i)
+                foreach(var item in obstacles)
                 {
-                    for (int j = 0; j < squares; ++j)
-                    {
-                        if (map[i, j] == 1)
-                        {
-                            g.FillRectangle(new SolidBrush(Color.Red), new Rectangle(
-                                new Point(j * squareSize, i * squareSize), // Corrected the x, y coordinates
-                                new Size(squareSize, squareSize)
-                            ));
-                        }
-                    }
+                    g.FillRectangle(new SolidBrush(Color.Red), new Rectangle(
+                        new Point(item.Item2 * squareSize, item.Item1 * squareSize), // Corrected the x, y coordinates
+                        new Size(squareSize, squareSize)
+                    ));
                 }
             }
         }
@@ -328,11 +256,11 @@ namespace A_star
         {
             Color actualColor = color ?? Color.Green;
 
-            int square_l = (int)(panel1.Width / Math.Sqrt(map.Length));
+            int square_l = (int)(panel1.Width / squares);
 
             using (Graphics g = Graphics.FromImage(pathBitmap))
             {
-                Pen pen = new Pen(actualColor, 10);
+                Pen pen = new Pen(actualColor, Math.Min(10, square_l / 5));
                 g.DrawLine(pen,
                     new Point(x * square_l + square_l / 2, y * square_l + square_l / 2),
                     new Point(x1 * square_l + square_l / 2, y1 * square_l + square_l / 2)
@@ -346,7 +274,7 @@ namespace A_star
         {
             ClearPath();
 
-            PathFinder pathFinder = new PathFinder(map);
+            PathFindingAlg pathFinder = new PathFindingAlg(squares, squares, obstacles);
             await pathFinder.FindPath(startEnd, this);
         }
 
@@ -354,150 +282,17 @@ namespace A_star
         {
             ClearPath();
         }
-    }
 
-    class PathFinder
-    {
-        private class Cell
+        private void placeStartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            public double f { get; set; }
-            public double g;
-            public double h;
-            public int type;
-            public int parent_x;
-            public int parent_y;
-
-            public Cell(int type = 0, double g = 0.0, double h = 0.0, double f = Double.MaxValue, int parent_x = -1, int parent_y = -1)
-            {
-                this.type = type;
-                this.f = f;
-                this.g = g;
-                this.h = h;
-                this.parent_x = parent_x;
-                this.parent_y = parent_y;
-            }
-        }
-        
-        private Cell[,] cells; //???
-        private SortedSet<(double, int, int)> OpenList;
-        private bool[,] CloseList;
-
-        private int ROW;
-        private int COL;
-
-        public PathFinder(int[,] map) 
-        {
-            ROW = COL = (int)Math.Sqrt(map.Length);
-
-            cells = new Cell[ROW, COL];
-            for (int i = 0; i < ROW; i++)
-            {
-                for (int j = 0; j < COL; j++)
-                {
-                    cells[i, j] = new Cell(map[i, j]);
-                }
-            }
-
-            OpenList = new 
-                SortedSet<(double, int, int)>
-                (
-                    Comparer<(double, int, int)>.Create((a, b) => a.Item1.CompareTo(b.Item1))
-                );
-
-            CloseList = new bool[ROW, COL];
+            PLACE_OBSTACLE = false;
+            PLACE_START = true;
         }
 
-        public async Task FindPath(int[] startEnd, Form1 form) //now will be real A*
+        private void placeEndToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenList.Add((0.0, startEnd[0], startEnd[1]));
-
-            cells[startEnd[0], startEnd[1]].f = 0.0;
-            cells[startEnd[0], startEnd[1]].g = 0.0;
-            cells[startEnd[0], startEnd[1]].h = 0.0;
-            cells[startEnd[0], startEnd[1]].parent_x = -1;
-            cells[startEnd[0], startEnd[1]].parent_y = -1;
-
-            while (OpenList.Count > 0) 
-            {
-                (double f, int x, int y) p = OpenList.Min;
-                OpenList.Remove(p);
-
-                int x = p.x;
-                int y = p.y;
-
-                CloseList[x, y] = true;
-
-                for(int i = -1; i <= 1; i++)
-                {
-                    for(int j = -1; j <= 1; j++)
-                    {
-                        if (i == 0 && j == 0) continue;
-
-                        int newX = x + i;
-                        int newY = y + j;
-
-                        if(!Valid(newX, newY)) continue;
-
-                        if (newX == startEnd[2] && newY == startEnd[3]) 
-                        {
-                            form.DrawCell(x, y, newX, newY);
-                            MessageBox.Show("Destination Reached");
-                            cells[newX, newY].parent_x = x;
-                            cells[newX, newY].parent_y = y;
-                            BacktrackPath(newX, newY, form);
-                            return; 
-                        }
-
-                        if (!CloseList[newX, newY] && cells[newX, newY].type != Form1.OBSTACLE)
-                        {
-                            double newG = cells[x, y].g + 1.0;
-                            double newH = GetHVal(newX, newY, startEnd[2], startEnd[3]);
-                            double newF = newG + newH;
-
-                            if (cells[newX, newY].f > newF)
-                            {
-                                OpenList.Add((newF, newX, newY));
-
-                                form.DrawCell(x, y, newX, newY);
-
-                                cells[newX, newY].f = newF;
-                                cells[newX, newY].g = newG;
-                                cells[newX, newY].h = newH;
-                                cells[newX, newY].parent_x = x;
-                                cells[newX, newY].parent_y = y;
-
-                                await Task.Delay(100);
-                            }
-                        }
-                    }
-                }
-            }
-            MessageBox.Show("Destination not Reached");
-        }
-
-        private bool Valid(int x, int y)
-        {
-            return x >= 0 && y >= 0 && x < ROW && y < COL;
-        }
-
-        private double GetHVal(int x, int y, int destX, int destY)
-        {
-            return Math.Sqrt(Math.Pow(x - destX, 2) + Math.Pow(y - destY, 2));
-        }
-
-        private void BacktrackPath(int endRow, int endCol, Form1 form)
-        {
-            int currRow = endRow;
-            int currCol = endCol;
-
-            while (cells[currRow, currCol].type != Form1.START)
-            {
-                int parentRow = cells[currRow, currCol].parent_x;
-                int parentCol = cells[currRow, currCol].parent_y;
-                form.DrawCell(currRow, currCol, parentRow, parentCol, Color.Blue);
-                currRow = parentRow;
-                currCol = parentCol;
-            }
+            PLACE_OBSTACLE = false;
+            PLACE_START = false;
         }
     }
 

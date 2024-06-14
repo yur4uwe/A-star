@@ -42,12 +42,14 @@ namespace A_star
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new DoubleBufferedPanel();
+            this.panel1 = new A_star.DoubleBufferedPanel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.GridSizeInp = new System.Windows.Forms.ToolStripTextBox();
             this.resizeGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findShortestPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.placeStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.placeEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,7 +69,9 @@ namespace A_star
             this.GridSizeInp,
             this.resizeGridToolStripMenuItem,
             this.findShortestPathToolStripMenuItem,
-            this.clearPathToolStripMenuItem});
+            this.clearPathToolStripMenuItem,
+            this.placeStartToolStripMenuItem,
+            this.placeEndToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(894, 27);
@@ -101,6 +105,20 @@ namespace A_star
             this.clearPathToolStripMenuItem.Text = "Clear Path";
             this.clearPathToolStripMenuItem.Click += new System.EventHandler(this.clearPathBtn_Click);
             // 
+            // placeStartToolStripMenuItem
+            // 
+            this.placeStartToolStripMenuItem.Name = "placeStartToolStripMenuItem";
+            this.placeStartToolStripMenuItem.Size = new System.Drawing.Size(74, 23);
+            this.placeStartToolStripMenuItem.Text = "Place Start";
+            this.placeStartToolStripMenuItem.Click += new System.EventHandler(this.placeStartToolStripMenuItem_Click);
+            // 
+            // placeEndToolStripMenuItem
+            // 
+            this.placeEndToolStripMenuItem.Name = "placeEndToolStripMenuItem";
+            this.placeEndToolStripMenuItem.Size = new System.Drawing.Size(70, 23);
+            this.placeEndToolStripMenuItem.Text = "Place End";
+            this.placeEndToolStripMenuItem.Click += new System.EventHandler(this.placeEndToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -127,5 +145,7 @@ namespace A_star
         private System.Windows.Forms.ToolStripMenuItem resizeGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findShortestPathToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearPathToolStripMenuItem;
+        private ToolStripMenuItem placeStartToolStripMenuItem;
+        private ToolStripMenuItem placeEndToolStripMenuItem;
     }
 }
