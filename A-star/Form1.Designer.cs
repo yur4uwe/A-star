@@ -50,6 +50,9 @@ namespace A_star
             this.clearPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.placeStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.placeEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aStToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bFSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dijkstraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,6 +96,10 @@ namespace A_star
             // 
             // findShortestPathToolStripMenuItem
             // 
+            this.findShortestPathToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aStToolStripMenuItem,
+            this.bFSToolStripMenuItem,
+            this.dijkstraToolStripMenuItem});
             this.findShortestPathToolStripMenuItem.Name = "findShortestPathToolStripMenuItem";
             this.findShortestPathToolStripMenuItem.Size = new System.Drawing.Size(115, 23);
             this.findShortestPathToolStripMenuItem.Text = "Find Shortest Path";
@@ -118,6 +125,27 @@ namespace A_star
             this.placeEndToolStripMenuItem.Size = new System.Drawing.Size(70, 23);
             this.placeEndToolStripMenuItem.Text = "Place End";
             this.placeEndToolStripMenuItem.Click += new System.EventHandler(this.placeEndToolStripMenuItem_Click);
+            // 
+            // aStToolStripMenuItem
+            // 
+            this.aStToolStripMenuItem.Name = "aStToolStripMenuItem";
+            this.aStToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aStToolStripMenuItem.Text = "A-Star";
+            this.aStToolStripMenuItem.Click += new System.EventHandler(this.aStToolStripMenuItem_Click);
+            // 
+            // bFSToolStripMenuItem
+            // 
+            this.bFSToolStripMenuItem.Name = "bFSToolStripMenuItem";
+            this.bFSToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.bFSToolStripMenuItem.Text = "BFS";
+            this.bFSToolStripMenuItem.Click += new System.EventHandler(this.bFSToolStripMenuItem_Click);
+            // 
+            // dijkstraToolStripMenuItem
+            // 
+            this.dijkstraToolStripMenuItem.Name = "dijkstraToolStripMenuItem";
+            this.dijkstraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dijkstraToolStripMenuItem.Text = "Dijkstra";
+            this.dijkstraToolStripMenuItem.Click += new System.EventHandler(this.dijkstraToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -147,5 +175,8 @@ namespace A_star
         private System.Windows.Forms.ToolStripMenuItem clearPathToolStripMenuItem;
         private ToolStripMenuItem placeStartToolStripMenuItem;
         private ToolStripMenuItem placeEndToolStripMenuItem;
+        private ToolStripMenuItem aStToolStripMenuItem;
+        private ToolStripMenuItem bFSToolStripMenuItem;
+        private ToolStripMenuItem dijkstraToolStripMenuItem;
     }
 }

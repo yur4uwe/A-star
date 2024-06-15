@@ -101,11 +101,11 @@ namespace A_star
         private void Form1_Resize(object sender, EventArgs e)
         {
             ClearPath();
-            panel1.Top = this.Height / 10;
-            panel1.Left = this.Width / 15;
+            panel1.Top = this.Height / 20;
+            panel1.Left = this.Width / 30;
             panel1.Size = new System.Drawing.Size(
-                Math.Min(8 * this.Width / 10, 12 * this.Height / 15),
-                Math.Min(8 * this.Width / 10, 12 * this.Height / 15)
+                Math.Min(9 * this.Width / 10, 13 * this.Height / 15),
+                Math.Min(9 * this.Width / 10, 13 * this.Height / 15)
             );
 
             InitializeBitmaps();
@@ -272,10 +272,7 @@ namespace A_star
 
         private async void PathBtn_Click(object sender, EventArgs e)
         {
-            ClearPath();
-
-            PathFindingAlg pathFinder = new PathFindingAlg(squares, squares, obstacles);
-            await pathFinder.A_Star(startEnd, this);
+            
         }
 
         private void clearPathBtn_Click(object sender, EventArgs e)
@@ -293,6 +290,30 @@ namespace A_star
         {
             PLACE_OBSTACLE = false;
             PLACE_START = false;
+        }
+
+        private async void aStToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearPath();
+
+            PathFindingAlg pathFinder = new PathFindingAlg(squares, squares, obstacles);
+            await pathFinder.A_Star(startEnd, this);
+        }
+
+        private async void bFSToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearPath();
+
+            BFSAlg pathFinder = new BFSAlg(squares, squares, obstacles);
+            await pathFinder.BFS(startEnd, this);
+        }
+
+        private async void dijkstraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearPath();
+
+            DijkstraAlg pathFinder = new DijkstraAlg(squares, squares, obstacles);
+            await pathFinder.Dijkstra(startEnd, obstacles.Count, this);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using A_star;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,16 +9,20 @@ using System.Windows.Forms;
 
 namespace A_star
 {
+    class Cell
+    {
+        public int type;
+        public int parent_x;
+        public int parent_y;
+    }
+    
     internal class PathFindingAlg
     {
-        private class A_StCell
+        private class A_StCell : Cell
         {
             public double f { get; set; }
             public double g;
             public double h;
-            public int type;
-            public int parent_x;
-            public int parent_y;
 
             public A_StCell(int type = Form1.SPACE, double g = 0.0, double h = 0.0, double f = Double.MaxValue, int parent_x = -1, int parent_y = -1)
             {
@@ -94,7 +99,7 @@ namespace A_star
                             MessageBox.Show("Destination Reached");
                             cells[newX, newY].parent_x = x;
                             cells[newX, newY].parent_y = y;
-                            BacktrackPath(newX, newY, form);
+                            BackTrack.BacktrackPath(cells, newX, newY, form);
                             return;
                         }
 
@@ -116,7 +121,7 @@ namespace A_star
                                 cells[newX, newY].parent_x = x;
                                 cells[newX, newY].parent_y = y;
 
-                                await Task.Delay(100);
+                                await Task.Delay(20);
                             }
                         }
                     }
@@ -125,16 +130,26 @@ namespace A_star
             MessageBox.Show("Destination not Reached");
         }
 
-        public async Task Dijkstra() { await Task.Delay(100); }
+        private bool Valid(int x, int y)
+        {
+            return x >= 0 && y >= 0 && x < ROW && y < COL;
+        }
 
-        class Cell
+        private double GetHVal(int x, int y, int destX, int destY)
+        {
+            return Math.Sqrt(Math.Pow(x - destX, 2) + Math.Pow(y - destY, 2));
+        }
+
+        
+    }
+
+    internal class BFSAlg
+    {
+        class BFSCell : Cell
         {
             public bool visited;
-            public int parent_x;
-            public int parent_y;
-            public int type;
 
-            public Cell(int type = 0, bool visited = false, int parent_x = -1, int parent_y = -1)
+            public BFSCell(int type = 0, bool visited = false, int parent_x = -1, int parent_y = -1)
             {
                 this.type = type;
                 this.visited = visited;
@@ -142,29 +157,30 @@ namespace A_star
                 this.parent_y = parent_y;
             }
         }
-        private List<int[]> q;
-        private Cell[,] map;
 
-        public async Task BFS(int[,] map, int[] startEnd, Form1 form) 
+        public BFSAlg(int row, int col, HashSet<(int, int)> obstacles)
         {
-            this.ROW = this.COL = (int)Math.Sqrt(map.Length);
+            ROW = row;
+            COL = col;
 
             this.q = new List<int[]>();
-            this.map = new Cell[ROW, COL];
+            this.map = new BFSCell[ROW, COL];
 
-            for (int i = 0; i < ROW; ++i)
+            foreach (var item in obstacles)
             {
-                for (int j = 0; j < COL; ++j)
-                {
-                    this.map[i, j] = new Cell(map[i, j]);
-                }
+                map[item.Item1, item.Item2] = new BFSCell(Form1.OBSTACLE);
             }
+        }
 
-            int rows = ROW;
-            int cols = COL;
+        private List<int[]> q;
+        private BFSCell[,] map;
+        private int ROW;
+        private int COL;
 
+        public async Task BFS(int[] startEnd, Form1 form)
+        {
             q.Add(new int[2] { startEnd[0], startEnd[1] });
-            this.map[startEnd[0], startEnd[1]] = new Cell(Form1.START, true, -1, -1);
+            this.map[startEnd[0], startEnd[1]] = new BFSCell(Form1.START, true, -1, -1);
 
             while (q.Count > 0)
             {
@@ -189,11 +205,11 @@ namespace A_star
                     int newRow = currCell[0] + dir[0];
                     int newCol = currCell[1] + dir[1];
 
-                    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols && !map[newRow, newCol].visited && map[newRow, newCol].type != Form1.OBSTACLE)
+                    if (newRow >= 0 && newRow < ROW && newCol >= 0 && newCol < COL && 
+                        this.map[newRow, newCol] == null)
                     {
-                        map[newRow, newCol].visited = true;
-                        map[newRow, newCol].parent_x = currCell[0];
-                        map[newRow, newCol].parent_y = currCell[1];
+                        this.map[newRow, newCol] = new BFSCell(Form1.SPACE, true, currCell[0], currCell[1]);
+
                         q.Add(new int[] { newRow, newCol });
                         form.DrawCell(currCell[0], currCell[1], newRow, newCol);
 
@@ -201,29 +217,141 @@ namespace A_star
                         {
                             MessageBox.Show("Destination found");
                             // Path found, backtrack to the start
-                            BacktrackPath(startEnd[2], startEnd[3], form);
+                            BackTrack.BacktrackPath(this.map, startEnd[2], startEnd[3], form);
                             return;
                         }
 
-                        await Task.Delay(100);
+                        await Task.Delay(20);
                     }
                 }
 
             }
             MessageBox.Show("Destination not Found");
         }
+    }
 
-        private bool Valid(int x, int y)
+    internal class DijkstraAlg
+    {
+        private class DijCell : Cell
         {
-            return x >= 0 && y >= 0 && x < ROW && y < COL;
+            public int distance;
+
+            public DijCell(int type = 0, int distance = int.MaxValue, int parent_x = -1, int parent_y = -1)
+            {
+                this.type = type;
+                this.parent_x = parent_x;
+                this.parent_y = parent_y;
+                this.distance = distance;
+            }
         }
 
-        private double GetHVal(int x, int y, int destX, int destY)
+        private int ROW;
+        private int COL;
+        private bool[,] sptSet;
+        private DijCell[,] Dist;
+
+        public DijkstraAlg(int row, int col, HashSet<(int, int)> obstacles)
         {
-            return Math.Sqrt(Math.Pow(x - destX, 2) + Math.Pow(y - destY, 2));
+            ROW = row;
+            COL = col;
+
+            this.sptSet = new bool[ROW, COL];
+            this.Dist = new DijCell[ROW, COL];
+
+            for (int i = 0; i < ROW; i++)
+            {
+                for (int j = 0; j < COL; j++)
+                {
+                    this.Dist[i, j] = new DijCell();
+                }
+            }
+
+            foreach (var item in obstacles)
+            {
+                this.Dist[item.Item1, item.Item2] = new DijCell(Form1.OBSTACLE);
+            }
         }
 
-        private void BacktrackPath(int endRow, int endCol, Form1 form)
+        private (int, int) MinDistance()
+        {
+            int min = int.MaxValue;
+            (int, int) min_index = (-1, -1);
+
+            for (int i = 0; i < ROW; i++)
+            {
+                for (int j = 0; j < COL; j++)
+                {
+                    if (!sptSet[i, j] && Dist[i, j].distance <= min)
+                    {
+                        min = Dist[i, j].distance;
+                        min_index = (i, j);
+                    }
+                }
+            }
+
+            return min_index;
+        }
+
+        public async Task Dijkstra(int[] startEnd, int obstacles, Form1 form)
+        {
+            int startX = startEnd[0];
+            int startY = startEnd[1];
+            int endX = startEnd[2];
+            int endY = startEnd[3];
+
+            this.Dist[startX, startY] = new DijCell(Form1.START, 0);
+
+            for (int count = 0; count < ROW * COL - obstacles; count++)
+            {
+                var (uX, uY) = MinDistance();
+
+                if (uX == -1 && uY == -1) break; // No reachable cell found
+
+                sptSet[uX, uY] = true;
+
+                int[] dx = { -1, 1, 0, 0, -1, -1, 1, 1 };
+                int[] dy = { 0, 0, -1, 1, -1, 1, -1, 1 };
+
+                for (int i = 0; i < 8; i++)
+                {
+                    int newX = uX + dx[i];
+                    int newY = uY + dy[i];
+
+                    if (IsValid(newX, newY) && !sptSet[newX, newY] && Dist[newX, newY].type != Form1.OBSTACLE)
+                    {
+                        int newDist = Dist[uX, uY].distance + 1;
+                        if (newDist < Dist[newX, newY].distance)
+                        {
+                            Dist[newX, newY].distance = newDist;
+                            Dist[newX, newY].parent_x = uX;
+                            Dist[newX, newY].parent_y = uY;
+
+                            form.DrawCell(uX, uY, newX, newY);
+
+                            if (newX == endX && newY == endY)
+                            {
+                                MessageBox.Show("Destination found");
+                                // Path found, backtrack to the start
+                                BackTrack.BacktrackPath(this.Dist, startEnd[2], startEnd[3], form);
+                                return;
+                            }
+
+                            await Task.Delay(20);
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool IsValid(int x, int y)
+        {
+            return x >= 0 && x < ROW && y >= 0 && y < COL;
+        }
+    }
+
+    class BackTrack
+    {
+        public static void BacktrackPath(Cell[,] cells, int endRow, int endCol, Form1 form)
         {
             int currRow = endRow;
             int currCol = endCol;
@@ -238,5 +366,6 @@ namespace A_star
             }
         }
     }
+    
 }
 
