@@ -301,11 +301,11 @@ namespace A_star
             await pathFinder.Dijkstra(startEnd, obstacles.Count, this);
         }
 
-        private void graphToolStripMenuItem_Click(object sender, EventArgs e)
+        private void layoutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Hide();
-            GraphLayout graphLayout = new GraphLayout();
-            graphLayout.ShowDialog();
+            GraphLayout gridLayout = new GraphLayout();
+            gridLayout.ShowDialog();
             this.Close();
         }
     }

@@ -17,11 +17,13 @@ namespace A_star
         {
             NodeValue = value;
             this.Size = new Size(50, 50);
-            this.BackColor = Color.LightBlue;
-            this.BorderStyle = BorderStyle.FixedSingle;
+            this.BackColor = Color.Transparent; // Set background color to transparent
+            this.DoubleBuffered = true; // Enable double buffering to reduce flicker
 
-            // Enable double buffering to reduce flicker
-            this.DoubleBuffered = true;
+            // Set the region to a circle
+            GraphicsPath path = new GraphicsPath();
+            path.AddEllipse(0, 0, this.Width, this.Height);
+            this.Region = new Region(path);
 
             // Add mouse event handlers for dragging
             this.MouseDown += NodeControl_MouseDown;
@@ -29,9 +31,19 @@ namespace A_star
             this.MouseUp += NodeControl_MouseUp;
         }
 
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            // Do not call base.OnPaintBackground to avoid painting the default background
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
+            // Draw a circle
+            using (Brush brush = new SolidBrush(Color.LightBlue))
+            {
+                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                e.Graphics.FillEllipse(brush, 0, 0, this.Width, this.Height);
+            }
 
             // Draw the node value
             using (Font font = new Font("Arial", 10))
@@ -61,6 +73,7 @@ namespace A_star
             {
                 var p = this.Parent.PointToClient(MousePosition);
                 this.Location = new Point(p.X - dragStartPoint.X, p.Y - dragStartPoint.Y);
+                this.Parent.Invalidate(); // Invalidate the parent control to trigger a repaint
             }
         }
 

@@ -35,11 +35,13 @@
             this.addEdgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FirstNodeComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.SecondNodeComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.Canvas = new A_star.DoubleBufferedPanel();
+            this.addEdge = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteEdgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteNodeComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteEdgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Canvas = new A_star.DoubleBufferedPanel();
+            this.changeLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +51,8 @@
             this.addNodeToolStripMenuItem,
             this.addEdgeToolStripMenuItem,
             this.deleteNodeToolStripMenuItem,
-            this.deleteEdgeToolStripMenuItem});
+            this.deleteEdgeToolStripMenuItem,
+            this.changeLayoutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(831, 24);
@@ -77,7 +80,7 @@
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addToolStripMenuItem.Text = "Add";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
@@ -85,7 +88,8 @@
             // 
             this.addEdgeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FirstNodeComboBox,
-            this.SecondNodeComboBox});
+            this.SecondNodeComboBox,
+            this.addEdge});
             this.addEdgeToolStripMenuItem.Name = "addEdgeToolStripMenuItem";
             this.addEdgeToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.addEdgeToolStripMenuItem.Text = "Add Edge";
@@ -102,13 +106,12 @@
             this.SecondNodeComboBox.Size = new System.Drawing.Size(121, 23);
             this.SecondNodeComboBox.Text = "Second Node";
             // 
-            // Canvas
+            // addEdge
             // 
-            this.Canvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Canvas.Location = new System.Drawing.Point(34, 44);
-            this.Canvas.Name = "Canvas";
-            this.Canvas.Size = new System.Drawing.Size(748, 572);
-            this.Canvas.TabIndex = 0;
+            this.addEdge.Name = "addEdge";
+            this.addEdge.Size = new System.Drawing.Size(181, 22);
+            this.addEdge.Text = "Add";
+            this.addEdge.Click += new System.EventHandler(this.addEdge_Click);
             // 
             // deleteNodeToolStripMenuItem
             // 
@@ -119,24 +122,39 @@
             this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.deleteNodeToolStripMenuItem.Text = "Delete Node";
             // 
+            // DeleteNodeComboBox
+            // 
+            this.DeleteNodeComboBox.Name = "DeleteNodeComboBox";
+            this.DeleteNodeComboBox.Size = new System.Drawing.Size(100, 23);
+            this.DeleteNodeComboBox.Text = "Choose Node";
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // deleteEdgeToolStripMenuItem
             // 
             this.deleteEdgeToolStripMenuItem.Name = "deleteEdgeToolStripMenuItem";
             this.deleteEdgeToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
             this.deleteEdgeToolStripMenuItem.Text = "Delete Edge";
             // 
-            // deleteToolStripMenuItem
+            // Canvas
             // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.Canvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Canvas.Location = new System.Drawing.Point(34, 44);
+            this.Canvas.Name = "Canvas";
+            this.Canvas.Size = new System.Drawing.Size(748, 572);
+            this.Canvas.TabIndex = 0;
             // 
-            // DeleteNodeComboBox
+            // changeLayoutToolStripMenuItem
             // 
-            this.DeleteNodeComboBox.Name = "DeleteNodeComboBox";
-            this.DeleteNodeComboBox.Size = new System.Drawing.Size(100, 23);
-            this.DeleteNodeComboBox.Text = "Choose Node";
+            this.changeLayoutToolStripMenuItem.Name = "changeLayoutToolStripMenuItem";
+            this.changeLayoutToolStripMenuItem.Size = new System.Drawing.Size(99, 20);
+            this.changeLayoutToolStripMenuItem.Text = "Change Layout";
+            this.changeLayoutToolStripMenuItem.Click += new System.EventHandler(this.changeLayoutToolStripMenuItem_Click);
             // 
             // GraphLayout
             // 
@@ -170,5 +188,7 @@
         private System.Windows.Forms.ToolStripComboBox DeleteNodeComboBox;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteEdgeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addEdge;
+        private System.Windows.Forms.ToolStripMenuItem changeLayoutToolStripMenuItem;
     }
 }

@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace A_star
 {
@@ -67,14 +69,45 @@ namespace A_star
         private void DrawNode(int val)
         {
             NodeControl node = new NodeControl(val);
-            node.Location = new Point(10, 10); // Set the initial location
+            int newX = 10, newY = 10;
+
+            bool positionFound = false;
+
+            while (!positionFound)
+            {
+                positionFound = true;
+
+                // Check if the new position overlaps with any existing nodes
+                foreach (var item in nodes)
+                {
+                    int distanceX = Math.Abs(newX - item.Value.Location.X);
+                    int distanceY = Math.Abs(newY - item.Value.Location.Y);
+
+                    if (distanceX < nodeSize && distanceY < nodeSize)
+                    {
+                        // Adjust the position if there's an overlap
+                        newX += nodeSize;
+                        if (newX + nodeSize > Canvas.Width)
+                        {
+                            newX = 10;
+                            newY += nodeSize;
+                        }
+                        positionFound = false;
+                        break;
+                    }
+                }
+            }
+
+            node.Location = new Point(newX, newY); // Set the initial location
             nodes[val] = node;
             Canvas.Controls.Add(node);
+            Canvas.Invalidate(); // Trigger a repaint to ensure the node is drawn
         }
 
         private void Canvas_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImage(baseBitmap, Point.Empty);
+            baseBitmap = new Bitmap(Canvas.Width, Canvas.Height);
+            DrawEdges(e.Graphics);// Draw edges on the provided Graphics object
         }
 
         private void GraphLayout_Resize(object sender, EventArgs e)
@@ -85,6 +118,8 @@ namespace A_star
                 9 * this.Width / 10,
                 13 * this.Height / 15
             );
+
+            Canvas.Invalidate();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -117,10 +152,17 @@ namespace A_star
             RemoveItemFromComboBox(SecondNodeComboBox, selectedNodeValue);
             RemoveItemFromComboBox(DeleteNodeComboBox, selectedNodeValue);
 
+            // Remove edges connected to the node
+            Graph.edges.RemoveAll(edge => edge.Item1 == selectedNodeValue || edge.Item2 == selectedNodeValue);
+
             // Reset the selected index of the delete combo box
             DeleteNodeComboBox.SelectedIndex = -1;
 
             MessageBox.Show($"Node {selectedNodeValue} deleted successfully.");
+
+            // Redraw the edges and invalidate the canvas
+            DrawEdges(Graphics.FromImage(baseBitmap));
+            Canvas.Invalidate(); // Trigger a repaint after modifying the graph
         }
 
         private void RemoveItemFromComboBox(ToolStripComboBox comboBox, int itemValue)
@@ -133,6 +175,46 @@ namespace A_star
                     break;
                 }
             }
+        }
+
+        private void addEdge_Click(object sender, EventArgs e)
+        {
+            int vertex1 = int.Parse(FirstNodeComboBox.SelectedItem.ToString());
+            int vertex2 = int.Parse(SecondNodeComboBox.SelectedItem.ToString());
+
+            if (vertex1 == vertex2)
+            {
+                MessageBox.Show("Cannot connect a node to itself.");
+                return;
+            }
+
+            Graph.AddEdge(vertex1, vertex2);
+            DrawEdges(Graphics.FromImage(baseBitmap));
+            Canvas.Invalidate(); // Trigger a repaint after modifying the graph
+        }
+
+        public void DrawEdges(Graphics g)
+        {
+            foreach (var edge in Graph.edges)
+            {
+                int firstX = nodes[edge.Item1].Location.X + nodeSize / 2;
+                int secondX = nodes[edge.Item2].Location.X + nodeSize / 2;
+                int firstY = nodes[edge.Item1].Location.Y + nodeSize / 2;
+                int secondY = nodes[edge.Item2].Location.Y + nodeSize / 2;
+
+                using (Pen pen = new Pen(Color.LightBlue, 2))
+                {
+                    g.DrawLine(pen, firstX, firstY, secondX, secondY);
+                }
+            }
+        }
+
+        private void changeLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Hide(); // Hide the current form
+            Gridlayout gridLayout = new Gridlayout(); // Show the current form again when GridLayout is closed
+            gridLayout.ShowDialog(); // Show the GridLayout form non-modally
+            this.Close();
         }
     }
 }

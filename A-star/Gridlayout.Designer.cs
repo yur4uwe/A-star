@@ -54,8 +54,6 @@ namespace A_star
             this.placeStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.placeEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nxMSquareGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.graphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -152,25 +150,10 @@ namespace A_star
             // 
             // layoutToolStripMenuItem
             // 
-            this.layoutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.nxMSquareGridToolStripMenuItem,
-            this.graphToolStripMenuItem});
             this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
             this.layoutToolStripMenuItem.Size = new System.Drawing.Size(99, 23);
             this.layoutToolStripMenuItem.Text = "Change Layout";
-            // 
-            // nxMSquareGridToolStripMenuItem
-            // 
-            this.nxMSquareGridToolStripMenuItem.Name = "nxMSquareGridToolStripMenuItem";
-            this.nxMSquareGridToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.nxMSquareGridToolStripMenuItem.Text = "NxM square grid ";
-            // 
-            // graphToolStripMenuItem
-            // 
-            this.graphToolStripMenuItem.Name = "graphToolStripMenuItem";
-            this.graphToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.graphToolStripMenuItem.Text = "Graph";
-            this.graphToolStripMenuItem.Click += new System.EventHandler(this.graphToolStripMenuItem_Click);
+            this.layoutToolStripMenuItem.Click += new System.EventHandler(this.layoutToolStripMenuItem_Click);
             // 
             // Gridlayout
             // 
@@ -204,7 +187,5 @@ namespace A_star
         private ToolStripMenuItem bFSToolStripMenuItem;
         private ToolStripMenuItem dijkstraToolStripMenuItem;
         private ToolStripMenuItem layoutToolStripMenuItem;
-        private ToolStripMenuItem nxMSquareGridToolStripMenuItem;
-        private ToolStripMenuItem graphToolStripMenuItem;
     }
 }
