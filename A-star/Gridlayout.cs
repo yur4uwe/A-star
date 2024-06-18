@@ -12,7 +12,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace A_star
 {
-    public partial class Form1 : Form
+    public partial class Gridlayout : Form
     {
         private Bitmap baseBitmap;
         private Bitmap gridBitmap;
@@ -31,9 +31,8 @@ namespace A_star
         public const int OBSTACLE = 101;
         public const int START = 102;
         public const int END = 103;
-        
 
-        public Form1()
+        public Gridlayout()
         {
             InitializeComponent();
             InitializeBitmaps();
@@ -145,48 +144,39 @@ namespace A_star
             int square_top = y / gridSize;
             int square_left = x / gridSize;
 
-            using (Graphics g = Graphics.FromImage(cellBitmap))
+            if (PLACE_OBSTACLE)
             {
-                Pen pen = new Pen(Color.Blue, 10);
-                Brush brush = new SolidBrush(Color.Red);
-
-                if(PLACE_OBSTACLE)
+                if (obstacles.Contains((square_top, square_left)))
                 {
-                    if (obstacles.Contains((square_top, square_left)))
-                    {
-                        obstacles.Remove((square_top, square_left));
-                        DrawCells();
-                        return;
-                    }
-                    else if (startEnd[0] == square_top && startEnd[1] == square_left)
-                    {
-                        startEnd[0] = startEnd[1] = -1;
-                    }
-                    else if (startEnd[2] == square_top && startEnd[3] == square_left)
-                    {
-                        startEnd[2] = startEnd[3] = -1;
-                    }
+                    obstacles.Remove((square_top, square_left));
+                    DrawCells();
+                    return;
+                }
+                else if (startEnd[0] == square_top && startEnd[1] == square_left)
+                {
+                    startEnd[0] = startEnd[1] = -1;
+                }
+                else if (startEnd[2] == square_top && startEnd[3] == square_left)
+                {
+                    startEnd[2] = startEnd[3] = -1;
+                }
 
-                    obstacles.Add((square_top, square_left));
+                obstacles.Add((square_top, square_left));
+            }
+            else
+            {
+                if (PLACE_START)
+                {
+                    startEnd[0] = square_top;
+                    startEnd[1] = square_left;
                 }
                 else
                 {
-                    if(PLACE_START)
-                    {
-                        startEnd[0] = square_top;
-                        startEnd[1] = square_left;
-                    }
-                    else
-                    {
-                        startEnd[2] = square_top;
-                        startEnd[3] = square_left;
-                    }
-
-                    PLACE_OBSTACLE = true;
+                    startEnd[2] = square_top;
+                    startEnd[3] = square_left;
                 }
 
-                pen.Dispose();
-                brush.Dispose();
+                PLACE_OBSTACLE = true;
             }
 
             DrawCells();
@@ -270,11 +260,6 @@ namespace A_star
             panel1.Invalidate(true);
         }
 
-        private async void PathBtn_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         private void clearPathBtn_Click(object sender, EventArgs e)
         {
             ClearPath();
@@ -315,6 +300,14 @@ namespace A_star
             DijkstraAlg pathFinder = new DijkstraAlg(squares, squares, obstacles);
             await pathFinder.Dijkstra(startEnd, obstacles.Count, this);
         }
+
+        private void graphToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            GraphLayout graphLayout = new GraphLayout();
+            graphLayout.ShowDialog();
+            this.Close();
+        }
     }
 
     static class Program
@@ -324,7 +317,7 @@ namespace A_star
         {
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-            System.Windows.Forms.Application.Run(new Form1());
+            System.Windows.Forms.Application.Run(new Gridlayout());
         }
     }
 }

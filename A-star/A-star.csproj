@@ -36,12 +36,22 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="GraphNode.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gridlayout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Gridlayout.Designer.cs">
+      <DependentUpon>Gridlayout.cs</DependentUpon>
     </Compile>
+    <Compile Include="GraphLayout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GraphLayout.Designer.cs">
+      <DependentUpon>GraphLayout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="graph.cs" />
     <Compile Include="PathFindingAlg.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -52,8 +62,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="GraphLayout.resx">
+      <DependentUpon>GraphLayout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gridlayout.resx">
+      <DependentUpon>Gridlayout.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

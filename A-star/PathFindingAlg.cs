@@ -24,7 +24,7 @@ namespace A_star
             public double g;
             public double h;
 
-            public A_StCell(int type = Form1.SPACE, double g = 0.0, double h = 0.0, double f = Double.MaxValue, int parent_x = -1, int parent_y = -1)
+            public A_StCell(int type = Gridlayout.SPACE, double g = 0.0, double h = 0.0, double f = Double.MaxValue, int parent_x = -1, int parent_y = -1)
             {
                 this.type = type;
                 this.f = f;
@@ -51,7 +51,7 @@ namespace A_star
 
             foreach (var item in obstacles)
             {
-                cells[item.Item1, item.Item2] = new A_StCell(Form1.OBSTACLE);
+                cells[item.Item1, item.Item2] = new A_StCell(Gridlayout.OBSTACLE);
             }
 
             OpenList = new
@@ -63,11 +63,11 @@ namespace A_star
             CloseList = new bool[ROW, COL];
         }
 
-        public async Task A_Star(int[] startEnd, Form1 form) //now will be real A*
+        public async Task A_Star(int[] startEnd, Gridlayout form) //now will be real A*
         {
             OpenList.Add((0.0, startEnd[0], startEnd[1]));
 
-            cells[startEnd[0], startEnd[1]] = new A_StCell(Form1.START, 0.0, 0.0, 0.0);
+            cells[startEnd[0], startEnd[1]] = new A_StCell(Gridlayout.START, 0.0, 0.0, 0.0);
 
             while (OpenList.Count > 0)
             {
@@ -103,7 +103,7 @@ namespace A_star
                             return;
                         }
 
-                        if (!CloseList[newX, newY] && cells[newX, newY].type != Form1.OBSTACLE)
+                        if (!CloseList[newX, newY] && cells[newX, newY].type != Gridlayout.OBSTACLE)
                         {
                             double newG = cells[x, y].g + 1.0;
                             double newH = GetHVal(newX, newY, startEnd[2], startEnd[3]);
@@ -168,7 +168,7 @@ namespace A_star
 
             foreach (var item in obstacles)
             {
-                map[item.Item1, item.Item2] = new BFSCell(Form1.OBSTACLE);
+                map[item.Item1, item.Item2] = new BFSCell(Gridlayout.OBSTACLE);
             }
         }
 
@@ -177,10 +177,10 @@ namespace A_star
         private int ROW;
         private int COL;
 
-        public async Task BFS(int[] startEnd, Form1 form)
+        public async Task BFS(int[] startEnd, Gridlayout form)
         {
             q.Add(new int[2] { startEnd[0], startEnd[1] });
-            this.map[startEnd[0], startEnd[1]] = new BFSCell(Form1.START, true, -1, -1);
+            this.map[startEnd[0], startEnd[1]] = new BFSCell(Gridlayout.START, true, -1, -1);
 
             while (q.Count > 0)
             {
@@ -208,7 +208,7 @@ namespace A_star
                     if (newRow >= 0 && newRow < ROW && newCol >= 0 && newCol < COL && 
                         this.map[newRow, newCol] == null)
                     {
-                        this.map[newRow, newCol] = new BFSCell(Form1.SPACE, true, currCell[0], currCell[1]);
+                        this.map[newRow, newCol] = new BFSCell(Gridlayout.SPACE, true, currCell[0], currCell[1]);
 
                         q.Add(new int[] { newRow, newCol });
                         form.DrawCell(currCell[0], currCell[1], newRow, newCol);
@@ -268,7 +268,7 @@ namespace A_star
 
             foreach (var item in obstacles)
             {
-                this.Dist[item.Item1, item.Item2] = new DijCell(Form1.OBSTACLE);
+                this.Dist[item.Item1, item.Item2] = new DijCell(Gridlayout.OBSTACLE);
             }
         }
 
@@ -292,14 +292,14 @@ namespace A_star
             return min_index;
         }
 
-        public async Task Dijkstra(int[] startEnd, int obstacles, Form1 form)
+        public async Task Dijkstra(int[] startEnd, int obstacles, Gridlayout form)
         {
             int startX = startEnd[0];
             int startY = startEnd[1];
             int endX = startEnd[2];
             int endY = startEnd[3];
 
-            this.Dist[startX, startY] = new DijCell(Form1.START, 0);
+            this.Dist[startX, startY] = new DijCell(Gridlayout.START, 0);
 
             for (int count = 0; count < ROW * COL - obstacles; count++)
             {
@@ -317,7 +317,7 @@ namespace A_star
                     int newX = uX + dx[i];
                     int newY = uY + dy[i];
 
-                    if (IsValid(newX, newY) && !sptSet[newX, newY] && Dist[newX, newY].type != Form1.OBSTACLE)
+                    if (IsValid(newX, newY) && !sptSet[newX, newY] && Dist[newX, newY].type != Gridlayout.OBSTACLE)
                     {
                         int newDist = Dist[uX, uY].distance + 1;
                         if (newDist < Dist[newX, newY].distance)
@@ -351,12 +351,12 @@ namespace A_star
 
     class BackTrack
     {
-        public static void BacktrackPath(Cell[,] cells, int endRow, int endCol, Form1 form)
+        public static void BacktrackPath(Cell[,] cells, int endRow, int endCol, Gridlayout form)
         {
             int currRow = endRow;
             int currCol = endCol;
 
-            while (cells[currRow, currCol].type != Form1.START)
+            while (cells[currRow, currCol].type != Gridlayout.START)
             {
                 int parentRow = cells[currRow, currCol].parent_x;
                 int parentCol = cells[currRow, currCol].parent_y;

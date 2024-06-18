@@ -14,7 +14,7 @@ namespace A_star
         }
     }
 
-    partial class Form1
+    partial class Gridlayout
     {
         /// <summary>
         /// Required designer variable.
@@ -47,12 +47,15 @@ namespace A_star
             this.GridSizeInp = new System.Windows.Forms.ToolStripTextBox();
             this.resizeGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findShortestPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.placeStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.placeEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aStToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bFSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dijkstraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.placeStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.placeEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nxMSquareGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.graphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,7 +77,8 @@ namespace A_star
             this.findShortestPathToolStripMenuItem,
             this.clearPathToolStripMenuItem,
             this.placeStartToolStripMenuItem,
-            this.placeEndToolStripMenuItem});
+            this.placeEndToolStripMenuItem,
+            this.layoutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(894, 27);
@@ -103,7 +107,27 @@ namespace A_star
             this.findShortestPathToolStripMenuItem.Name = "findShortestPathToolStripMenuItem";
             this.findShortestPathToolStripMenuItem.Size = new System.Drawing.Size(115, 23);
             this.findShortestPathToolStripMenuItem.Text = "Find Shortest Path";
-            this.findShortestPathToolStripMenuItem.Click += new System.EventHandler(this.PathBtn_Click);
+            // 
+            // aStToolStripMenuItem
+            // 
+            this.aStToolStripMenuItem.Name = "aStToolStripMenuItem";
+            this.aStToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.aStToolStripMenuItem.Text = "A-Star";
+            this.aStToolStripMenuItem.Click += new System.EventHandler(this.aStToolStripMenuItem_Click);
+            // 
+            // bFSToolStripMenuItem
+            // 
+            this.bFSToolStripMenuItem.Name = "bFSToolStripMenuItem";
+            this.bFSToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.bFSToolStripMenuItem.Text = "BFS";
+            this.bFSToolStripMenuItem.Click += new System.EventHandler(this.bFSToolStripMenuItem_Click);
+            // 
+            // dijkstraToolStripMenuItem
+            // 
+            this.dijkstraToolStripMenuItem.Name = "dijkstraToolStripMenuItem";
+            this.dijkstraToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.dijkstraToolStripMenuItem.Text = "Dijkstra";
+            this.dijkstraToolStripMenuItem.Click += new System.EventHandler(this.dijkstraToolStripMenuItem_Click);
             // 
             // clearPathToolStripMenuItem
             // 
@@ -126,28 +150,29 @@ namespace A_star
             this.placeEndToolStripMenuItem.Text = "Place End";
             this.placeEndToolStripMenuItem.Click += new System.EventHandler(this.placeEndToolStripMenuItem_Click);
             // 
-            // aStToolStripMenuItem
+            // layoutToolStripMenuItem
             // 
-            this.aStToolStripMenuItem.Name = "aStToolStripMenuItem";
-            this.aStToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.aStToolStripMenuItem.Text = "A-Star";
-            this.aStToolStripMenuItem.Click += new System.EventHandler(this.aStToolStripMenuItem_Click);
+            this.layoutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.nxMSquareGridToolStripMenuItem,
+            this.graphToolStripMenuItem});
+            this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(99, 23);
+            this.layoutToolStripMenuItem.Text = "Change Layout";
             // 
-            // bFSToolStripMenuItem
+            // nxMSquareGridToolStripMenuItem
             // 
-            this.bFSToolStripMenuItem.Name = "bFSToolStripMenuItem";
-            this.bFSToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.bFSToolStripMenuItem.Text = "BFS";
-            this.bFSToolStripMenuItem.Click += new System.EventHandler(this.bFSToolStripMenuItem_Click);
+            this.nxMSquareGridToolStripMenuItem.Name = "nxMSquareGridToolStripMenuItem";
+            this.nxMSquareGridToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.nxMSquareGridToolStripMenuItem.Text = "NxM square grid ";
             // 
-            // dijkstraToolStripMenuItem
+            // graphToolStripMenuItem
             // 
-            this.dijkstraToolStripMenuItem.Name = "dijkstraToolStripMenuItem";
-            this.dijkstraToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.dijkstraToolStripMenuItem.Text = "Dijkstra";
-            this.dijkstraToolStripMenuItem.Click += new System.EventHandler(this.dijkstraToolStripMenuItem_Click);
+            this.graphToolStripMenuItem.Name = "graphToolStripMenuItem";
+            this.graphToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.graphToolStripMenuItem.Text = "Graph";
+            this.graphToolStripMenuItem.Click += new System.EventHandler(this.graphToolStripMenuItem_Click);
             // 
-            // Form1
+            // Gridlayout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -155,7 +180,7 @@ namespace A_star
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "Gridlayout";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
@@ -178,5 +203,8 @@ namespace A_star
         private ToolStripMenuItem aStToolStripMenuItem;
         private ToolStripMenuItem bFSToolStripMenuItem;
         private ToolStripMenuItem dijkstraToolStripMenuItem;
+        private ToolStripMenuItem layoutToolStripMenuItem;
+        private ToolStripMenuItem nxMSquareGridToolStripMenuItem;
+        private ToolStripMenuItem graphToolStripMenuItem;
     }
 }
