@@ -40,8 +40,8 @@
             this.DeleteNodeComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteEdgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.Canvas = new A_star.DoubleBufferedPanel();
             this.changeLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Canvas = new A_star.DoubleBufferedPanel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -80,7 +80,7 @@
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addToolStripMenuItem.Text = "Add";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
@@ -141,6 +141,13 @@
             this.deleteEdgeToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
             this.deleteEdgeToolStripMenuItem.Text = "Delete Edge";
             // 
+            // changeLayoutToolStripMenuItem
+            // 
+            this.changeLayoutToolStripMenuItem.Name = "changeLayoutToolStripMenuItem";
+            this.changeLayoutToolStripMenuItem.Size = new System.Drawing.Size(99, 20);
+            this.changeLayoutToolStripMenuItem.Text = "Change Layout";
+            this.changeLayoutToolStripMenuItem.Click += new System.EventHandler(this.changeLayoutToolStripMenuItem_Click);
+            // 
             // Canvas
             // 
             this.Canvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -148,13 +155,7 @@
             this.Canvas.Name = "Canvas";
             this.Canvas.Size = new System.Drawing.Size(748, 572);
             this.Canvas.TabIndex = 0;
-            // 
-            // changeLayoutToolStripMenuItem
-            // 
-            this.changeLayoutToolStripMenuItem.Name = "changeLayoutToolStripMenuItem";
-            this.changeLayoutToolStripMenuItem.Size = new System.Drawing.Size(99, 20);
-            this.changeLayoutToolStripMenuItem.Text = "Change Layout";
-            this.changeLayoutToolStripMenuItem.Click += new System.EventHandler(this.changeLayoutToolStripMenuItem_Click);
+            this.Canvas.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseClick);
             // 
             // GraphLayout
             // 

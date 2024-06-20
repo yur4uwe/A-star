@@ -29,6 +29,8 @@ namespace A_star
             this.MouseDown += NodeControl_MouseDown;
             this.MouseMove += NodeControl_MouseMove;
             this.MouseUp += NodeControl_MouseUp;
+            this.MouseDoubleClick += NodeControl_MouseDoubleClick;
+            this.MouseClick += NodeControl_MouseClick;
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
@@ -80,6 +82,22 @@ namespace A_star
         private void NodeControl_MouseUp(object sender, MouseEventArgs e)
         {
             isDragging = false;
+        }
+
+        private void NodeControl_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (this.Parent.Parent is GraphLayout graphLayout)
+            {
+                graphLayout.NodeControl_MouseDoubleClick(sender, e);
+            }
+        }
+
+        private void NodeControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (this.Parent.Parent is GraphLayout graphLayout)
+            {
+                graphLayout.NodeControl_MouseClick(sender, e);
+            }
         }
     }
 }

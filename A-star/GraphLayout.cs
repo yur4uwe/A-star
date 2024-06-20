@@ -17,6 +17,7 @@ namespace A_star
         private graph Graph;
         private Dictionary<int, NodeControl> nodes;
         private Bitmap baseBitmap;
+        private NodeControl firstSelectedNode;
         private const int nodeSize = 50;
 
         public GraphLayout()
@@ -158,11 +159,11 @@ namespace A_star
             // Reset the selected index of the delete combo box
             DeleteNodeComboBox.SelectedIndex = -1;
 
-            MessageBox.Show($"Node {selectedNodeValue} deleted successfully.");
-
             // Redraw the edges and invalidate the canvas
             DrawEdges(Graphics.FromImage(baseBitmap));
             Canvas.Invalidate(); // Trigger a repaint after modifying the graph
+
+            MessageBox.Show($"Node {selectedNodeValue} deleted successfully.");
         }
 
         private void RemoveItemFromComboBox(ToolStripComboBox comboBox, int itemValue)
@@ -193,7 +194,7 @@ namespace A_star
             Canvas.Invalidate(); // Trigger a repaint after modifying the graph
         }
 
-        public void DrawEdges(Graphics g)
+        private void DrawEdges(Graphics g)
         {
             foreach (var edge in Graph.edges)
             {
@@ -215,6 +216,35 @@ namespace A_star
             Gridlayout gridLayout = new Gridlayout(); // Show the current form again when GridLayout is closed
             gridLayout.ShowDialog(); // Show the GridLayout form non-modally
             this.Close();
+        }
+
+        public void NodeControl_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            NodeControl node = sender as NodeControl;
+            firstSelectedNode = node; // Set the first selected node
+        }
+
+        public void NodeControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            NodeControl node = sender as NodeControl;
+
+            if (firstSelectedNode != null && firstSelectedNode != node)
+            {
+                int vertex1 = firstSelectedNode.NodeValue;
+                int vertex2 = node.NodeValue;
+
+                Graph.AddEdge(vertex1, vertex2);
+                DrawEdges(Graphics.FromImage(baseBitmap));
+
+                firstSelectedNode = null; // Reset the first selected node
+            }
+            Canvas.Invalidate();
+        }
+
+        private void Canvas_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (firstSelectedNode != null)
+                firstSelectedNode = null;
         }
     }
 }
