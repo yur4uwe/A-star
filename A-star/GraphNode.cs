@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,10 +13,12 @@ namespace A_star
     public class NodeControl : UserControl
     {
         public int NodeValue { get; private set; }
+        public int NodeID {  get; set; }
 
-        public NodeControl(int value)
+        public NodeControl(int value, int ID)
         {
             NodeValue = value;
+            NodeID = ID;
             this.Size = new Size(50, 50);
             this.BackColor = Color.Transparent; // Set background color to transparent
             this.DoubleBuffered = true; // Enable double buffering to reduce flicker
@@ -89,6 +92,7 @@ namespace A_star
             if (this.Parent.Parent is GraphLayout graphLayout)
             {
                 graphLayout.NodeControl_MouseDoubleClick(sender, e);
+                //ResizeNode(20); // Increase the size by 20
             }
         }
 
@@ -97,7 +101,31 @@ namespace A_star
             if (this.Parent.Parent is GraphLayout graphLayout)
             {
                 graphLayout.NodeControl_MouseClick(sender, e);
+                //ResizeNode(-20); // Reset the size (reduce by 20)
             }
+        }
+
+        public void ResizeNode(int change)
+        {
+            this.Size = new Size(this.Width + change, this.Height + change);
+
+            // Update the region to match the new size
+            GraphicsPath path = new GraphicsPath();
+            path.AddEllipse(0, 0, this.Width, this.Height);
+            this.Region = new Region(path);
+
+            // Adjust the location to keep the node centered
+            this.Location = new Point(
+                this.Location.X - change / 2,
+                this.Location.Y - change / 2
+            );
+
+            this.Parent.Invalidate(); // Invalidate the parent control to trigger a repaint
+        }
+
+        public override string ToString()
+        {
+            return "Node ID: " + NodeID.ToString() + "| Node value: " + NodeValue.ToString();
         }
     }
 }

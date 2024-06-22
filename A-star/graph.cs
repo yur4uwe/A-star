@@ -9,51 +9,126 @@ namespace A_star
 {
     internal class graph
     {
-        public HashSet<int> vertices { get; private set; }
-        public List<(int, int)> edges { get; private set; }
+        public int vertices { get; private set; }
+        public List<(int, int, int)> edges { get; private set; }
 
         public graph() 
         {
-            vertices = new HashSet<int>();
-            edges = new List<(int, int)>();
+            vertices = 0;
+            edges = new List<(int, int, int)>();
         }
 
-        public void AddEdge(int u, int v) { this.edges.Add((u, v)); }
-
-        public void AddNode(int x) { vertices.Add(x); }
-
-        public void RemoveEdge(int u, int v) 
-        {
-            if (edges.Contains((u, v))) edges.Remove((u, v));
-            else if (edges.Contains((v, u))) edges.Remove((v, u));
-        }
-
-        public void RemoveNode(int x) 
-        {
-            List<(int, int)> temp = new List<(int, int)>();
-            foreach (var edge in this.edges)
+        public bool AddEdge(int u, int v, int w = -1) { 
+            if(this.edges.Contains((u, v, w)) || this.edges.Contains((v, u, w))) return false;
+            else
             {
-                if (edge.Item1 != x && edge.Item2 != x)
-                    temp.Add(edge);
+                this.edges.Add((u, v, w));
+                return true;
             }
-            this.edges = temp;
+            
+        }
 
-            vertices.Remove(x);
+        public void AddNode() { vertices++; }
+
+        public void RemoveEdge(int u, int v, int w = -1) 
+        {
+            if (edges.Contains((u, v, w))) edges.Remove((u, v, w));
+            else if (edges.Contains((v, u, w))) edges.Remove((v, u, w));
+        }
+
+        public void RemoveNode() 
+        {
+            vertices--;
+        }
+
+        public int GetWeight(int u, int v)
+        {
+            foreach (var edge in edges)
+            {
+                if((u == edge.Item1 || u == edge.Item2) && (v == edge.Item1 || v == edge.Item2))
+                {
+                    return edge.Item3;
+                }
+            }
+            return -1;
         }
     }
 
     class DijkstraGraph
     {
-        
+        private int[,] adj;
+        private HashSet<int> sptSet;
+        private int[] dist;
+        private int vertices;
+
+        public DijkstraGraph(int vertices, List<(int, int, int)> edges)
+        {
+            adj = new int[vertices, vertices];
+
+            for(int i = 0; i < vertices; i++)
+            {
+                for(int j = 0; j < vertices; j++)
+                {
+                    adj[i, j] = 0;
+                }
+            }
+            
+            foreach (var edge in edges)
+            {
+                int u = edge.Item1;
+                int v = edge.Item2;
+                int w = edge.Item3;
+                adj[u, v] = w;
+                adj[v, u] = w;
+            }
+
+            sptSet = new HashSet<int>();
+            dist = new int[vertices];
+
+            for (int i = 0; i < vertices; i++) dist[i] = int.MaxValue; 
+
+            this.vertices = vertices;
+        }
+
+        public void Execute(int start)
+        {
+            dist[start] = 0;
+
+            while(sptSet.Count != vertices) 
+            {
+                int u = minDist();
+
+                sptSet.Add(u);
+
+                for(int v = 0; v < vertices; v++)
+                {
+                    if (!sptSet.Contains(v) && adj[u, v] != 0 &&
+                        dist[u] != int.MaxValue && dist[u] + adj[u, v] < dist[v])
+                    {
+                        dist[v] = dist[u] + adj[u, v];
+                    }
+                }
+            }
+        }
+
+        private int minDist()
+        {
+            // Initialize min value
+            int min = int.MaxValue, min_index = -1;
+
+            for (int v = 0; v < vertices; v++)
+                if (!sptSet.Contains(v) && dist[v] <= min)
+                {
+                    min = dist[v];
+                    min_index = v;
+                }
+
+            return min_index;
+        }
     }
 
     class A_StarGraph
     {
         
-    }
-
-    class BFSGraph
-    {
-
     }
 }

@@ -36,6 +36,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GraphNode.cs">
       <SubType>UserControl</SubType>
     </Compile>

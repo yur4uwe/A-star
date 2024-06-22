@@ -41,7 +41,10 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteEdgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteEdgeComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.Canvas = new A_star.DoubleBufferedPanel();
+            this.WeightTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -82,13 +85,14 @@
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.addToolStripMenuItem.Text = "Add";
-            this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
+            this.addToolStripMenuItem.Click += new System.EventHandler(this.AddNode_Click);
             // 
             // addEdgeToolStripMenuItem
             // 
             this.addEdgeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FirstNodeComboBox,
             this.SecondNodeComboBox,
+            this.WeightTextBox,
             this.addEdge});
             this.addEdgeToolStripMenuItem.Name = "addEdgeToolStripMenuItem";
             this.addEdgeToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
@@ -133,10 +137,13 @@
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteNode_Click);
             // 
             // deleteEdgeToolStripMenuItem
             // 
+            this.deleteEdgeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DeleteEdgeComboBox,
+            this.deleteToolStripMenuItem1});
             this.deleteEdgeToolStripMenuItem.Name = "deleteEdgeToolStripMenuItem";
             this.deleteEdgeToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
             this.deleteEdgeToolStripMenuItem.Text = "Delete Edge";
@@ -148,6 +155,19 @@
             this.changeLayoutToolStripMenuItem.Text = "Change Layout";
             this.changeLayoutToolStripMenuItem.Click += new System.EventHandler(this.changeLayoutToolStripMenuItem_Click);
             // 
+            // DeleteEdgeComboBox
+            // 
+            this.DeleteEdgeComboBox.Name = "DeleteEdgeComboBox";
+            this.DeleteEdgeComboBox.Size = new System.Drawing.Size(121, 23);
+            this.DeleteEdgeComboBox.Text = "Choose Edge";
+            // 
+            // deleteToolStripMenuItem1
+            // 
+            this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.deleteToolStripMenuItem1.Text = "Delete";
+            this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.DeleteEdge_Click);
+            // 
             // Canvas
             // 
             this.Canvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -156,6 +176,15 @@
             this.Canvas.Size = new System.Drawing.Size(748, 572);
             this.Canvas.TabIndex = 0;
             this.Canvas.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseClick);
+            this.Canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseMove);
+            // 
+            // WeightTextBox
+            // 
+            this.WeightTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.WeightTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.WeightTextBox.Name = "WeightTextBox";
+            this.WeightTextBox.Size = new System.Drawing.Size(100, 23);
+            this.WeightTextBox.ToolTipText = "Weight";
             // 
             // GraphLayout
             // 
@@ -191,5 +220,8 @@
         private System.Windows.Forms.ToolStripMenuItem deleteEdgeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addEdge;
         private System.Windows.Forms.ToolStripMenuItem changeLayoutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox DeleteEdgeComboBox;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripTextBox WeightTextBox;
     }
 }
