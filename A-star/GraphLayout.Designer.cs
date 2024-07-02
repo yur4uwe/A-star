@@ -35,16 +35,24 @@
             this.addEdgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FirstNodeComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.SecondNodeComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.WeightTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.addEdge = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteNodeComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteEdgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteEdgeComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.setStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findShortestPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.traverseGraphToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dFSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bFSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Result = new System.Windows.Forms.RichTextBox();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Canvas = new A_star.DoubleBufferedPanel();
-            this.WeightTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,10 +63,15 @@
             this.addEdgeToolStripMenuItem,
             this.deleteNodeToolStripMenuItem,
             this.deleteEdgeToolStripMenuItem,
-            this.changeLayoutToolStripMenuItem});
+            this.setStartToolStripMenuItem,
+            this.setEndToolStripMenuItem,
+            this.findShortestPathToolStripMenuItem,
+            this.traverseGraphToolStripMenuItem,
+            this.changeLayoutToolStripMenuItem,
+            this.clearToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(831, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(888, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -110,6 +123,14 @@
             this.SecondNodeComboBox.Size = new System.Drawing.Size(121, 23);
             this.SecondNodeComboBox.Text = "Second Node";
             // 
+            // WeightTextBox
+            // 
+            this.WeightTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.WeightTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.WeightTextBox.Name = "WeightTextBox";
+            this.WeightTextBox.Size = new System.Drawing.Size(100, 23);
+            this.WeightTextBox.ToolTipText = "Weight";
+            // 
             // addEdge
             // 
             this.addEdge.Name = "addEdge";
@@ -148,13 +169,6 @@
             this.deleteEdgeToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
             this.deleteEdgeToolStripMenuItem.Text = "Delete Edge";
             // 
-            // changeLayoutToolStripMenuItem
-            // 
-            this.changeLayoutToolStripMenuItem.Name = "changeLayoutToolStripMenuItem";
-            this.changeLayoutToolStripMenuItem.Size = new System.Drawing.Size(99, 20);
-            this.changeLayoutToolStripMenuItem.Text = "Change Layout";
-            this.changeLayoutToolStripMenuItem.Click += new System.EventHandler(this.changeLayoutToolStripMenuItem_Click);
-            // 
             // DeleteEdgeComboBox
             // 
             this.DeleteEdgeComboBox.Name = "DeleteEdgeComboBox";
@@ -168,29 +182,89 @@
             this.deleteToolStripMenuItem1.Text = "Delete";
             this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.DeleteEdge_Click);
             // 
+            // setStartToolStripMenuItem
+            // 
+            this.setStartToolStripMenuItem.Name = "setStartToolStripMenuItem";
+            this.setStartToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+            this.setStartToolStripMenuItem.Text = "Set Start";
+            this.setStartToolStripMenuItem.Click += new System.EventHandler(this.setStartToolStripMenuItem_Click);
+            // 
+            // setEndToolStripMenuItem
+            // 
+            this.setEndToolStripMenuItem.Name = "setEndToolStripMenuItem";
+            this.setEndToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.setEndToolStripMenuItem.Text = "Set End";
+            this.setEndToolStripMenuItem.Click += new System.EventHandler(this.setEndToolStripMenuItem_Click);
+            // 
+            // findShortestPathToolStripMenuItem
+            // 
+            this.findShortestPathToolStripMenuItem.Name = "findShortestPathToolStripMenuItem";
+            this.findShortestPathToolStripMenuItem.Size = new System.Drawing.Size(115, 20);
+            this.findShortestPathToolStripMenuItem.Text = "Find Shortest path";
+            this.findShortestPathToolStripMenuItem.Click += new System.EventHandler(this.findShortestPathToolStripMenuItem_Click);
+            // 
+            // traverseGraphToolStripMenuItem
+            // 
+            this.traverseGraphToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dFSToolStripMenuItem,
+            this.bFSToolStripMenuItem});
+            this.traverseGraphToolStripMenuItem.Name = "traverseGraphToolStripMenuItem";
+            this.traverseGraphToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
+            this.traverseGraphToolStripMenuItem.Text = "Traverse Graph";
+            // 
+            // dFSToolStripMenuItem
+            // 
+            this.dFSToolStripMenuItem.Name = "dFSToolStripMenuItem";
+            this.dFSToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
+            this.dFSToolStripMenuItem.Text = "DFS";
+            this.dFSToolStripMenuItem.Click += new System.EventHandler(this.dFSToolStripMenuItem_Click);
+            // 
+            // bFSToolStripMenuItem
+            // 
+            this.bFSToolStripMenuItem.Name = "bFSToolStripMenuItem";
+            this.bFSToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
+            this.bFSToolStripMenuItem.Text = "BFS";
+            this.bFSToolStripMenuItem.Click += new System.EventHandler(this.bFSToolStripMenuItem_Click);
+            // 
+            // changeLayoutToolStripMenuItem
+            // 
+            this.changeLayoutToolStripMenuItem.Name = "changeLayoutToolStripMenuItem";
+            this.changeLayoutToolStripMenuItem.Size = new System.Drawing.Size(99, 20);
+            this.changeLayoutToolStripMenuItem.Text = "Change Layout";
+            this.changeLayoutToolStripMenuItem.Click += new System.EventHandler(this.changeLayoutToolStripMenuItem_Click);
+            // 
+            // Result
+            // 
+            this.Result.Location = new System.Drawing.Point(624, 44);
+            this.Result.Name = "Result";
+            this.Result.ReadOnly = true;
+            this.Result.Size = new System.Drawing.Size(219, 572);
+            this.Result.TabIndex = 2;
+            this.Result.Text = "";
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
             // Canvas
             // 
             this.Canvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Canvas.Location = new System.Drawing.Point(34, 44);
             this.Canvas.Name = "Canvas";
-            this.Canvas.Size = new System.Drawing.Size(748, 572);
+            this.Canvas.Size = new System.Drawing.Size(583, 572);
             this.Canvas.TabIndex = 0;
             this.Canvas.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseClick);
             this.Canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Canvas_MouseMove);
-            // 
-            // WeightTextBox
-            // 
-            this.WeightTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.WeightTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.WeightTextBox.Name = "WeightTextBox";
-            this.WeightTextBox.Size = new System.Drawing.Size(100, 23);
-            this.WeightTextBox.ToolTipText = "Weight";
             // 
             // GraphLayout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(831, 682);
+            this.ClientSize = new System.Drawing.Size(888, 682);
+            this.Controls.Add(this.Result);
             this.Controls.Add(this.Canvas);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -223,5 +297,13 @@
         private System.Windows.Forms.ToolStripComboBox DeleteEdgeComboBox;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
         private System.Windows.Forms.ToolStripTextBox WeightTextBox;
+        private System.Windows.Forms.ToolStripMenuItem findShortestPathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setStartToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setEndToolStripMenuItem;
+        private System.Windows.Forms.RichTextBox Result;
+        private System.Windows.Forms.ToolStripMenuItem traverseGraphToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dFSToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bFSToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
     }
 }

@@ -18,7 +18,6 @@ namespace A_star
         private Bitmap gridBitmap;
         private Bitmap cellBitmap;
         private Bitmap pathBitmap;
-        private int[,] map;
         private HashSet<(int, int)> obstacles;
         private int squares;
         private int[] startEnd;
@@ -88,7 +87,6 @@ namespace A_star
             squares = Convert.ToInt32(GridSizeInp.Text);
             startEnd = new int[4] { -1, -1, -1, -1 };
 
-            map = new int[,] { { 0 } };
             obstacles = new HashSet<(int, int)>();
             GridX = GridY = squares;
 
@@ -106,7 +104,7 @@ namespace A_star
                 Math.Min(9 * this.Width / 10, 13 * this.Height / 15),
                 Math.Min(9 * this.Width / 10, 13 * this.Height / 15)
             );
-
+            
             InitializeBitmaps();
             DrawCells();
             DrawGrid();
@@ -307,6 +305,52 @@ namespace A_star
             GraphLayout gridLayout = new GraphLayout();
             gridLayout.ShowDialog();
             this.Close();
+        }
+        bool placingObstacles = false;
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            placingObstacles = true;
+        }
+
+        private void panel1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (placingObstacles)
+            {
+                ClearPath();
+                Point p = e.Location;
+                int gridSquares;
+                if (!int.TryParse(GridSizeInp.Text, out gridSquares) || gridSquares <= 0)
+                {
+                    MessageBox.Show("Please enter a valid positive integer in the text box.");
+                    return;
+                }
+                int pixelsPerCell = panel1.Width / gridSquares;
+
+                int square_x = e.Y / pixelsPerCell, 
+                    square_y = e.X / pixelsPerCell;
+
+                if(PLACE_OBSTACLE)
+                {
+                    if (startEnd[0] == square_x && startEnd[1] == square_y)
+                    {
+                        startEnd[0] = startEnd[1] = -1;
+                    }
+                    else if (startEnd[2] == square_x && startEnd[3] == square_y)
+                    {
+                        startEnd[2] = startEnd[3] = -1;
+                    }
+
+                    obstacles.Add((square_x, square_y));
+                }
+
+                DrawCells();
+                panel1.Invalidate();
+            }
+        }
+
+        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        {
+            placingObstacles = false;
         }
     }
 

@@ -7,6 +7,9 @@ using System.Windows.Forms;
 
 namespace A_star
 {
+    /// <summary>
+    /// Input dialog form for some inputs that would be hard to put on form, needs to be more customizable
+    /// </summary>
     public partial class InputDialog : Form
     {
         public string InputText { get; private set; }

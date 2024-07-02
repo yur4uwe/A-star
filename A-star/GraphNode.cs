@@ -14,6 +14,19 @@ namespace A_star
     {
         public int NodeValue { get; private set; }
         public int NodeID {  get; set; }
+        public Point NodeCenter
+        {
+            get
+            {
+                return new Point(this.Location.X + this.Width / 2, this.Location.Y + this.Height / 2);
+            }
+        }
+        public enum PossibleState
+        {
+            start, end, selected, inert
+        }
+        public PossibleState state { get; set; }
+        
 
         public NodeControl(int value, int ID)
         {
@@ -22,6 +35,7 @@ namespace A_star
             this.Size = new Size(50, 50);
             this.BackColor = Color.Transparent; // Set background color to transparent
             this.DoubleBuffered = true; // Enable double buffering to reduce flicker
+            this.state = PossibleState.inert;
 
             // Set the region to a circle
             GraphicsPath path = new GraphicsPath();
@@ -44,7 +58,17 @@ namespace A_star
         protected override void OnPaint(PaintEventArgs e)
         {
             // Draw a circle
-            using (Brush brush = new SolidBrush(Color.LightBlue))
+            Color col;
+            switch (state) 
+            { 
+                case PossibleState.start:col = Color.Green; break;
+                case PossibleState.end: col = Color.Red; break;
+                case PossibleState.selected: col = Color.Orange; break;
+                default:col = Color.LightBlue; break;
+            }
+
+
+            using (Brush brush = new SolidBrush(col))
             {
                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 e.Graphics.FillEllipse(brush, 0, 0, this.Width, this.Height);
@@ -123,9 +147,9 @@ namespace A_star
             this.Parent.Invalidate(); // Invalidate the parent control to trigger a repaint
         }
 
-        public override string ToString()
+        public string Display()
         {
-            return "Node ID: " + NodeID.ToString() + "| Node value: " + NodeValue.ToString();
+            return "Node (ID: " + NodeID.ToString() + "| val: " + NodeValue.ToString() + ") ";
         }
     }
 }

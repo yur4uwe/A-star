@@ -36,6 +36,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Edge.cs" />
     <Compile Include="InputDialog.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -234,9 +234,9 @@ namespace A_star
     {
         private class DijCell : Cell
         {
-            public int distance;
+            public double distance;
 
-            public DijCell(int type = 0, int distance = int.MaxValue, int parent_x = -1, int parent_y = -1)
+            public DijCell(int type = 0, double distance = double.MaxValue, int parent_x = -1, int parent_y = -1)
             {
                 this.type = type;
                 this.parent_x = parent_x;
@@ -274,7 +274,7 @@ namespace A_star
 
         private (int, int) MinDistance()
         {
-            int min = int.MaxValue;
+            double min = double.MaxValue;
             (int, int) min_index = (-1, -1);
 
             for (int i = 0; i < ROW; i++)
@@ -294,8 +294,8 @@ namespace A_star
 
         public async Task Dijkstra(int[] startEnd, int obstacles, Gridlayout form)
         {
-            int startX = startEnd[0];
-            int startY = startEnd[1];
+            int startY = startEnd[0];
+            int startX = startEnd[1];
             int endX = startEnd[2];
             int endY = startEnd[3];
 
@@ -311,6 +311,7 @@ namespace A_star
 
                 int[] dx = { -1, 1, 0, 0, -1, -1, 1, 1 };
                 int[] dy = { 0, 0, -1, 1, -1, 1, -1, 1 };
+                double[] dist = { 1, 1, 1, 1, Math.Sqrt(2), Math.Sqrt(2), Math.Sqrt(2), Math.Sqrt(2) };
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -319,7 +320,7 @@ namespace A_star
 
                     if (IsValid(newX, newY) && !sptSet[newX, newY] && Dist[newX, newY].type != Gridlayout.OBSTACLE)
                     {
-                        int newDist = Dist[uX, uY].distance + 1;
+                        double newDist = Dist[uX, uY].distance + dist[i];
                         if (newDist < Dist[newX, newY].distance)
                         {
                             Dist[newX, newY].distance = newDist;
