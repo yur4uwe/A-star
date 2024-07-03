@@ -21,12 +21,13 @@ namespace A_star
         /// </summary>
         private Dictionary<int, NodeControl> nodes;
         private Bitmap baseBitmap;
+        private List<EdgeControl> edges = new List<EdgeControl>();
         private NodeControl firstSelectedNode;
         /// <summary>
         /// Stores edges that need to be paited in different color
         /// </summary>
         HashSet<(int, int)> EdgesToPaint;
-        private Point? currentMousePosition;
+        private Point currentMousePosition = new Point(0, 0);
         private const int nodeSize = 50;
         private int Id = 0;
         /// <summary>
@@ -118,15 +119,15 @@ namespace A_star
             node.Location = new Point((int)newX, (int)newY); // Set the initial location
             nodes[val] = node;
             Canvas.Controls.Add(node);
-            Canvas.Invalidate(); // Trigger a repaint to ensure the node is drawn
+            Canvas.Invalidate(true); // Trigger a repaint to ensure the node is drawn
         }
 
         private void Canvas_Paint(object sender, PaintEventArgs e)
         {
             
             e.Graphics.DrawImage(baseBitmap, Point.Empty);
-            DrawEdges(e.Graphics);
-            if (firstSelectedNode != null && currentMousePosition.HasValue)
+            
+            if (firstSelectedNode != null)
             {
                 int fx = firstSelectedNode.Location.X + nodeSize / 2;
                 int fy = firstSelectedNode.Location.Y + nodeSize / 2;
@@ -134,11 +135,26 @@ namespace A_star
                 using (Pen pen = new Pen(Color.LightBlue, 2))
                 {
                     pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-                    e.Graphics.DrawLine(pen, new Point(fx, fy), currentMousePosition.Value);
+                    e.Graphics.DrawLine(pen, new Point(fx, fy), currentMousePosition);
                 }
             }
-            
-            //e.Graphics.FillEllipse(new SolidBrush(Color.Black), 0, 0, 50, 50);
+
+            int circleSize = 30; // Adjust the size of the circle as needed
+            int x = currentMousePosition.X - circleSize / 2;
+            int y = currentMousePosition.Y - circleSize / 2;
+
+            if (settingStart)
+            {
+                using (Brush brush = new SolidBrush(Color.Green))
+                {
+                    e.Graphics.FillEllipse(brush, new Rectangle(x, y, circleSize, circleSize));
+                }
+            }
+            else if(settingEnd)
+                using (Brush brush = new SolidBrush(Color.Red))
+                {
+                    e.Graphics.FillEllipse(brush, new Rectangle(x, y, circleSize, circleSize));
+                }
         }
 
         private void GraphLayout_Resize(object sender, EventArgs e)
@@ -154,7 +170,7 @@ namespace A_star
             Result.Left = Canvas.Left + Canvas.Width + 10;
             Result.Height = Canvas.Height;
 
-            Canvas.Invalidate();
+            Canvas.Invalidate(true);
         }
 
         private void RemoveItemFromComboBox(ToolStripComboBox comboBox, string itemValue)
@@ -171,8 +187,8 @@ namespace A_star
 
         private void addEdge_Click(object sender, EventArgs e)
         {
-            int vertex1 = nodes[int.Parse(FirstNodeComboBox.SelectedItem.ToString())].NodeID;
-            int vertex2 = nodes[int.Parse(SecondNodeComboBox.SelectedItem.ToString())].NodeID;
+            NodeControl vertex1 = nodes[int.Parse(FirstNodeComboBox.SelectedItem.ToString())];
+            NodeControl vertex2 = nodes[int.Parse(SecondNodeComboBox.SelectedItem.ToString())];
             int weight = -1;
             if (WeightTextBox.Text.Length != 0 && !int.TryParse(WeightTextBox.Text.ToString(), out weight))
             {
@@ -186,59 +202,18 @@ namespace A_star
                 return;
             }
 
-            Graph.AddEdge(vertex1, vertex2, weight);
+            Graph.AddEdge(vertex1.NodeID, vertex2.NodeID, weight);
             DeleteEdgeComboBox.Items.Add(vertex1.ToString() + "-" + vertex2.ToString());
-            DrawEdges(Graphics.FromImage(baseBitmap));
-            Canvas.Invalidate(); // Trigger a repaint after modifying the graph
+
+            var edgeControl = new EdgeControl(vertex1, vertex2, weight);
+            edges.Add(edgeControl);
+            Canvas.Controls.Add(edgeControl);
+            Canvas.Invalidate(true);
         }//Duplicate changes to NodeControl_MouseClick
 
-        private NodeControl GetNodeControlByID(int nodeID)
+        public NodeControl GetNodeControlByID(int nodeID)
         {
             return nodes.Values.FirstOrDefault(node => node.NodeID == nodeID);
-        }
-
-        private void DrawEdges(Graphics g)
-        {
-            g.Clear(Color.White);
-
-            foreach (var edge in Graph.edges)
-            {
-                NodeControl firstNode = GetNodeControlByID(edge.start);
-                NodeControl secondNode = GetNodeControlByID(edge.end);
-
-                if (firstNode != null && secondNode != null)
-                {
-                    int firstX = firstNode.Location.X + nodeSize / 2;
-                    int secondX = secondNode.Location.X + nodeSize / 2;
-                    int firstY = firstNode.Location.Y + nodeSize / 2;
-                    int secondY = secondNode.Location.Y + nodeSize / 2;
-
-                    int midX = (firstX + secondX) / 2;
-                    int midY = (firstY + secondY) / 2;
-
-                    if (EdgesToPaint.Contains((firstNode.NodeID, secondNode.NodeID)) || 
-                        EdgesToPaint.Contains((secondNode.NodeID, firstNode.NodeID)))
-                    {
-                        using (Pen pen = new Pen(Color.Orange, 4))
-                        {
-                            g.DrawLine(pen, firstX, firstY, secondX, secondY);
-                        }
-                    }
-                    else
-                    {
-                        using (Pen pen = new Pen(Color.LightBlue, 2))
-                        {
-                            g.DrawLine(pen, firstX, firstY, secondX, secondY);
-                        }
-                    }
-                    
-                    using (Font font = new Font("Arial", 10))
-                    using (Brush brush = new SolidBrush(Color.Black))
-                    {
-                        g.DrawString(edge.Wieght.ToString(), font, brush, new Point(midX, midY));
-                    }
-                }
-            }
         }
 
         private void changeLayoutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -276,8 +251,8 @@ namespace A_star
             {
                 var InputDialog = new InputDialog("Enter weight of an edge: ");
 
-                int vertex1 = firstSelectedNode.NodeID;
-                int vertex2 = node.NodeID;
+                NodeControl vertex1 = firstSelectedNode;
+                NodeControl vertex2 = node;
                 int weight = -1;
 
                 if (InputDialog.ShowDialog() != DialogResult.OK)
@@ -289,38 +264,38 @@ namespace A_star
                     return;
                 }
 
-                if (Graph.AddEdge(vertex1, vertex2, weight))
+                if (Graph.AddEdge(vertex1.NodeID, vertex2.NodeID, weight))
                     DeleteEdgeComboBox.Items.Add(firstSelectedNode.NodeValue.ToString() + "-" + node.NodeValue.ToString());
 
-                DrawEdges(Graphics.FromImage(baseBitmap));
+                var edgeControl = new EdgeControl(vertex1, vertex2, weight);
+                edges.Add(edgeControl);
+                Canvas.Controls.Add(edgeControl);
 
                 firstSelectedNode.ResizeNode(-NodeEnlargement);
-                firstSelectedNode = null; // Reset the first selected node
+                firstSelectedNode = null;
             }
             else if (settingStart || settingEnd)
             {
                 int settingWhat = settingStart ? 0 : 1;
-                bool startOrEnd = Convert.ToBoolean(settingWhat);
 
-                if (startEnd[settingWhat] >= 0)
+                if (startEnd[settingWhat] != -1)
                 {
-                    NodeControl oldNode = GetNodeControlByID(startEnd[settingWhat]);
-                    oldNode.state = NodeControl.PossibleState.inert;
-                    oldNode.Invalidate();
+                    nodes[startEnd[settingWhat]].state = NodeControl.PossibleState.inert;
                 }
 
-                node.state = startOrEnd ? NodeControl.PossibleState.end : NodeControl.PossibleState.start;
                 startEnd[settingWhat] = node.NodeID;
-                if (startEnd[0] == startEnd[1])
+                node.state = settingWhat == 0 ? NodeControl.PossibleState.start : NodeControl.PossibleState.end;
+
+                if (settingWhat == 0)
                 {
-                    if (startOrEnd) startEnd[0] = -1;
-                    else startEnd[1] = -1;
+                    settingStart = false;
                 }
-                node.Invalidate();
-                settingStart = false;
-                settingEnd = false;
+                else
+                {
+                    settingEnd = false;
+                }
             }
-            Canvas.Invalidate();
+            Canvas.Invalidate(true);
         }//ALSO ADDS AN EDGE!!!
         /// <summary>
         /// Interrupts active functions 
@@ -340,21 +315,52 @@ namespace A_star
         {
             if (DeleteEdgeComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select an edge to delete.");
                 return;
             }
 
-            string edge = DeleteEdgeComboBox.SelectedItem.ToString();
-            int[] vals = edge.Split('-').Select(int.Parse).ToArray();
+            string[] edgeNodes = DeleteEdgeComboBox.SelectedItem.ToString().Split('-');
+            int firstNodeID = int.Parse(edgeNodes[0]);
+            int secondNodeID = int.Parse(edgeNodes[1]);
 
-            int[] vertices = { nodes[vals[0]].NodeID, nodes[vals[1]].NodeID };
+            NodeControl firstNode = nodes[firstNodeID];
+            NodeControl secondNode = nodes[secondNodeID];
 
-            RemoveItemFromComboBox(DeleteEdgeComboBox, edge);
-            DeleteEdgeComboBox.Text = "Choose Edge";
+            if (firstNode != null && secondNode != null)
+            {
+                // Remove the edge from the graph data structure
+                Graph.RemoveEdge(firstNodeID, secondNodeID);
 
-            Graph.RemoveEdge(vertices[0], vertices[1], Graph.GetWeight(vertices[0], vertices[1]));
-            DrawEdges(Graphics.FromImage(baseBitmap));
-            Canvas.Invalidate();
+                // Define a predicate to find the matching edge
+                Func<EdgeControl, bool> func = edge =>
+                    (edge.start == firstNode && edge.end == secondNode) ||
+                    (edge.start == secondNode && edge.end == firstNode);
+
+                // Find the edge control to remove
+                EdgeControl edgeToRemove = edges.FirstOrDefault(func);
+
+                if (edgeToRemove != null)
+                {
+                    // Remove the edge control from the canvas and the list
+                    Canvas.Controls.Remove(edgeToRemove);
+                    edges.Remove(edgeToRemove);
+
+                    // Remove the edge from the combo box
+                    DeleteEdgeComboBox.Items.Remove(DeleteEdgeComboBox.SelectedItem);
+
+                    // Invalidate the canvas to trigger a repaint
+                    Canvas.Invalidate(true);
+                }
+                else
+                {
+                    // Debug information if edge not found
+                    MessageBox.Show("Edge not found in the list.");
+                }
+            }
+            else
+            {
+                // Debug information if nodes are not found
+                MessageBox.Show("One or both nodes not found.");
+            }
         }
 
         private void AddNode_Click(object sender, EventArgs e)
@@ -373,55 +379,48 @@ namespace A_star
 
         private void DeleteNode_Click(object sender, EventArgs e)
         {
-            // Check if a node is selected
             if (DeleteNodeComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select a node to delete.");
                 return;
             }
 
-            // Get the selected node value
-            int selectedNodeValue;
-            bool isParsed = int.TryParse(DeleteNodeComboBox.SelectedItem.ToString(), out selectedNodeValue);
-            if (!isParsed)
+            int nodeID = int.Parse(DeleteNodeComboBox.SelectedItem.ToString());
+            NodeControl nodeToDelete = GetNodeControlByID(nodeID);
+
+            if (nodeToDelete != null)
             {
-                MessageBox.Show("Invalid node value.");
-                return;
+                foreach (var edge in edges.Where(edge => edge.start == nodeToDelete || edge.end == nodeToDelete).ToList())
+                {
+                    Graph.RemoveEdge(edge.start.NodeID, edge.end.NodeID);
+                    edges.Remove(edge);
+                    Canvas.Controls.Remove(edge);
+                    DeleteEdgeComboBox.Items.Remove(edge.start.NodeValue.ToString() + "-" + edge.end.NodeValue.ToString());
+                }
+
+                Graph.RemoveNode();
+                nodes.Remove(nodeID);
+                Canvas.Controls.Remove(nodeToDelete);
+                RemoveItemFromComboBox(FirstNodeComboBox, nodeID.ToString());
+                RemoveItemFromComboBox(SecondNodeComboBox, nodeID.ToString());
+                RemoveItemFromComboBox(DeleteNodeComboBox, nodeID.ToString());
+
+                if (startEnd[0] == nodeID)
+                {
+                    startEnd[0] = -1;
+                }
+                else if (startEnd[1] == nodeID)
+                {
+                    startEnd[1] = -1;
+                }
+
+                Canvas.Invalidate(true);
             }
-
-            // Remove the node control from the canvas and the dictionary
-            if (nodes.ContainsKey(selectedNodeValue))
-            {
-                Canvas.Controls.Remove(nodes[selectedNodeValue]);
-                int ID = nodes[selectedNodeValue].NodeID;
-                nodes.Remove(selectedNodeValue);
-                NormalizeID(ID);
-            }
-
-            // Remove the node value from the combo boxes
-            RemoveItemFromComboBox(FirstNodeComboBox, selectedNodeValue.ToString());
-            RemoveItemFromComboBox(SecondNodeComboBox, selectedNodeValue.ToString());
-            RemoveItemFromComboBox(DeleteNodeComboBox, selectedNodeValue.ToString());
-
-            // Remove edges connected to the node
-            Graph.edges.RemoveAll(edge => edge.start == selectedNodeValue || edge.end == selectedNodeValue);
-            Graph.RemoveNode();
-
-            // Reset the selected index of the delete combo box
-            DeleteNodeComboBox.SelectedIndex = -1;
-
-            Canvas.Invalidate(); // Trigger a repaint after modifying the graph
-
-            MessageBox.Show($"Node {selectedNodeValue} deleted successfully.");
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (firstSelectedNode == null)
-                return;
-
             currentMousePosition = e.Location;
-            Canvas.Invalidate(); // Invalidate the canvas to trigger a repaint
+            Canvas.Invalidate(true);
         }
 
         private void NormalizeID(int deletedID)
@@ -451,20 +450,7 @@ namespace A_star
         {
             NodeControl currNode = GetNodeControlByID(NodeID);
             currNode.state = NodeControl.PossibleState.selected;
-
-            if (currNode != null)
-            {
-                using (Graphics g = Graphics.FromImage(baseBitmap))
-                {
-                    int x = currNode.Location.X;
-                    int y = currNode.Location.Y;
-
-                    g.FillEllipse(new SolidBrush(Color.Orange), x, y, nodeSize + 10, nodeSize + 10);
-                    g.FillEllipse(new SolidBrush(Color.Black), 0, 0, 50, 50);
-                }
-                Canvas.Invalidate(true); // Trigger a repaint to ensure the node is drawn
-                currNode.Invalidate();
-            }
+            Canvas.Invalidate(true);
         }
         /// <summary>
         /// Draws an edges between two nodes
@@ -473,8 +459,16 @@ namespace A_star
         /// <param name="end">id of second node</param>
         public void DrawEdge(int start, int end)
         {
-            EdgesToPaint.Add((start, end));
-            Canvas.Invalidate(true);
+            NodeControl startNode = GetNodeControlByID(start);
+            NodeControl endNode = GetNodeControlByID(end);
+
+            for(int i = 0; i < edges.Count; i++)
+            {
+                if ((edges[i].start == startNode || edges[i].start == endNode) && (edges[i].end == startNode || edges[i].end == endNode))
+                {
+                    edges[i].PaintEdge(Color.Orange);
+                }
+            }
         }
         /// <summary>
         /// Changes state of all nodes to default
@@ -485,13 +479,16 @@ namespace A_star
         {
             foreach (var item in this.nodes)
             {
-                if (item.Value.state == NodeControl.PossibleState.start && !deselect_start) continue;
-                else if (item.Value.state == NodeControl.PossibleState.end && !deselect_end) continue;
+                if (item.Value.NodeID == startEnd[0] && !deselect_start) item.Value.state = NodeControl.PossibleState.start;
+                else if (item.Value.NodeID == startEnd[1] && !deselect_end) item.Value.state = NodeControl.PossibleState.end;
                 else
                 { item.Value.state = NodeControl.PossibleState.inert; }
             }
 
-            this.RemoveEdges();
+            foreach (var edge in edges)
+            {
+                edge.PaintEdge(Color.LightBlue);
+            }
             Canvas.Invalidate(true);
         }
         /// <summary>
@@ -499,26 +496,25 @@ namespace A_star
         /// 
         /// </summary>
         /// <param name="predicate">determines which edges will be removed, if no edges specified - removes all edges</param>
-        public void RemoveEdges(Func<(int, int), bool> predicate = null)
+        public void RemoveEdges(Func<EdgeControl, bool> predicate = null)
         {
             // If no predicate is provided, remove all edges
             if (predicate == null)
             {
-                EdgesToPaint.Clear();
-                Canvas.Invalidate(); // Redraw the canvas
+                DeselectAll();
                 return;
             }
 
             // Create a list of edges to remove based on the predicate
-            var edgesToRemove = EdgesToPaint.Where(predicate).ToList();
+            var edgesToRemove = edges.Where(predicate).ToList();
 
             // Remove the edges
             foreach (var edge in edgesToRemove)
             {
-                EdgesToPaint.Remove(edge);
+                edge.PaintEdge(Color.LightBlue);
             }
 
-            Canvas.Invalidate(); // Redraw the canvas
+            Canvas.Invalidate(true); // Redraw the canvas
         }
 
         bool settingStart = false;
@@ -638,12 +634,76 @@ namespace A_star
             Graph.AddEdge(3, 4, 9);
             Graph.AddEdge(5, 4, 10);
 
-            Canvas.Invalidate();
+            foreach (Edge edge in Graph.edges)
+            {
+                EdgeControl newEdge = new EdgeControl(edge, this);
+                Canvas.Controls.Add(newEdge);
+                edges.Add(newEdge);
+                DeleteEdgeComboBox.Items.Add(newEdge.start.NodeValue.ToString() + "-" + newEdge.end.NodeValue.ToString());
+            }
+
+            Canvas.Invalidate(true);
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.DeselectAll();
+        }
+
+        public void EdgeClick(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("This Edge will be deleted forever", "Delete Edge?", MessageBoxButtons.YesNo);
+
+            EdgeControl MyEdge = sender as EdgeControl;
+
+            if(result == DialogResult.Yes)
+            {
+                NodeControl firstNode = MyEdge.start;
+                NodeControl secondNode = MyEdge.end;
+
+                if (firstNode != null && secondNode != null)
+                {
+                    // Remove the edge from the graph data structure
+                    Graph.RemoveEdge(firstNode.NodeID, secondNode.NodeID);
+
+                    // Find the edge control to remove
+                    EdgeControl edgeToRemove = edges[0];
+
+                    for (int i = 0; i < edges.Count; i++)
+                    {
+                        if ((edges[i].start == firstNode || edges[i].end == firstNode) && (edges[i].start == secondNode || edges[i].end == secondNode))
+                            edgeToRemove = edges[i];
+                    }
+
+                    if (edgeToRemove != null)
+                    {
+                        // Remove the edge control from the canvas and the list
+                        Canvas.Controls.Remove(edgeToRemove);
+                        edges.Remove(edgeToRemove);
+
+                        // Remove the edge from the combo box
+                        DeleteEdgeComboBox.Items.Remove(DeleteEdgeComboBox.SelectedItem);
+
+                        // Invalidate the canvas to trigger a repaint
+                        Canvas.Invalidate(true);
+                    }
+                    else
+                    {
+                        // Debug information if edge not found
+                        MessageBox.Show("Edge not found in the list.");
+                    }
+                }
+                else
+                {
+                    // Debug information if nodes are not found
+                    MessageBox.Show("One or both nodes not found.");
+                }
+            }
+            else if(result == DialogResult.No)
+            {
+                return;
+            }
+
         }
     }
 }

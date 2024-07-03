@@ -123,7 +123,7 @@ namespace A_star
                         dist[u] != int.MaxValue && dist[u] + adj[u, v] < dist[v])
                     {
                         dist[v] = dist[u] + adj[u, v];
-                        layout.RemoveEdges(edge => edge.Item1 == v || edge.Item2 == v);
+                        layout.RemoveEdges(edge => edge.start.NodeID == v || edge.end.NodeID == v);
                         layout.DrawEdge(u, v);
                     }
                 }

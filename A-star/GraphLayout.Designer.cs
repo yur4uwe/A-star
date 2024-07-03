@@ -50,8 +50,8 @@
             this.dFSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bFSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.Result = new System.Windows.Forms.RichTextBox();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Result = new System.Windows.Forms.RichTextBox();
             this.Canvas = new A_star.DoubleBufferedPanel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -233,6 +233,13 @@
             this.changeLayoutToolStripMenuItem.Text = "Change Layout";
             this.changeLayoutToolStripMenuItem.Click += new System.EventHandler(this.changeLayoutToolStripMenuItem_Click);
             // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
             // Result
             // 
             this.Result.Location = new System.Drawing.Point(624, 44);
@@ -241,13 +248,6 @@
             this.Result.Size = new System.Drawing.Size(219, 572);
             this.Result.TabIndex = 2;
             this.Result.Text = "";
-            // 
-            // clearToolStripMenuItem
-            // 
-            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
-            this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // Canvas
             // 

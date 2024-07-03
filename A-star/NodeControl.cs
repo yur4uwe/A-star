@@ -14,6 +14,9 @@ namespace A_star
     {
         public int NodeValue { get; private set; }
         public int NodeID {  get; set; }
+        public PossibleState state { get; set; }
+        public event EventHandler PositionChanged;
+
         public Point NodeCenter
         {
             get
@@ -21,11 +24,12 @@ namespace A_star
                 return new Point(this.Location.X + this.Width / 2, this.Location.Y + this.Height / 2);
             }
         }
+
         public enum PossibleState
         {
             start, end, selected, inert
         }
-        public PossibleState state { get; set; }
+        
         
 
         public NodeControl(int value, int ID)
@@ -103,6 +107,9 @@ namespace A_star
                 var p = this.Parent.PointToClient(MousePosition);
                 this.Location = new Point(p.X - dragStartPoint.X, p.Y - dragStartPoint.Y);
                 this.Parent.Invalidate(); // Invalidate the parent control to trigger a repaint
+
+                // Raise the PositionChanged event
+                PositionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
