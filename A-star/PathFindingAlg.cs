@@ -71,8 +71,9 @@ namespace A_star
 
             while (OpenList.Count > 0)
             {
-                (double f, int x, int y) p = OpenList.Min;
+                (double f, int x, int y) p = OpenList.Min;      
                 OpenList.Remove(p);
+                form.DrawCell(p.x, p.y, Color.LightGreen);
 
                 int x = p.x;
                 int y = p.y;
@@ -87,6 +88,7 @@ namespace A_star
 
                         int newX = x + i;
                         int newY = y + j;
+                        double dist = (i != 0 && j != 0) ? Math.Sqrt(2) : 1;
 
                         if (!Valid(newX, newY)) continue;
 
@@ -95,7 +97,7 @@ namespace A_star
 
                         if (newX == startEnd[2] && newY == startEnd[3])
                         {
-                            form.DrawCell(x, y, newX, newY);
+                            form.DrawCell(newX, newY);
                             MessageBox.Show("Destination Reached");
                             cells[newX, newY].parent_x = x;
                             cells[newX, newY].parent_y = y;
@@ -105,7 +107,7 @@ namespace A_star
 
                         if (!CloseList[newX, newY] && cells[newX, newY].type != Gridlayout.OBSTACLE)
                         {
-                            double newG = cells[x, y].g + 1.0;
+                            double newG = cells[x, y].g + dist;
                             double newH = GetHVal(newX, newY, startEnd[2], startEnd[3]);
                             double newF = newG + newH;
 
@@ -113,7 +115,7 @@ namespace A_star
                             {
                                 OpenList.Add((newF, newX, newY));
 
-                                form.DrawCell(x, y, newX, newY);
+                                form.DrawCell(newX, newY);
 
                                 cells[newX, newY].f = newF;
                                 cells[newX, newY].g = newG;
@@ -186,6 +188,7 @@ namespace A_star
             {
                 int[] currCell = q[0];
                 q.RemoveAt(0);
+                form.DrawCell(currCell[0], currCell[1], Color.LightGreen);
 
                 // Define directions for movement (down, up, right, left, and diagonals)
                 int[][] directions = new int[][]
@@ -211,7 +214,7 @@ namespace A_star
                         this.map[newRow, newCol] = new BFSCell(Gridlayout.SPACE, true, currCell[0], currCell[1]);
 
                         q.Add(new int[] { newRow, newCol });
-                        form.DrawCell(currCell[0], currCell[1], newRow, newCol);
+                        form.DrawCell(newRow, newCol);
 
                         if (newRow == startEnd[2] && newCol == startEnd[3])
                         {
@@ -299,7 +302,7 @@ namespace A_star
             int endX = startEnd[2];
             int endY = startEnd[3];
 
-            this.Dist[startX, startY] = new DijCell(Gridlayout.START, 0);
+            this.Dist[startY, startX] = new DijCell(Gridlayout.START, 0);
 
             for (int count = 0; count < ROW * COL - obstacles; count++)
             {
@@ -308,6 +311,7 @@ namespace A_star
                 if (uX == -1 && uY == -1) break; // No reachable cell found
 
                 sptSet[uX, uY] = true;
+                form.DrawCell(uX, uY, Color.LightGreen);
 
                 int[] dx = { -1, 1, 0, 0, -1, -1, 1, 1 };
                 int[] dy = { 0, 0, -1, 1, -1, 1, -1, 1 };
@@ -327,13 +331,14 @@ namespace A_star
                             Dist[newX, newY].parent_x = uX;
                             Dist[newX, newY].parent_y = uY;
 
-                            form.DrawCell(uX, uY, newX, newY);
+                            form.DrawCell(newX, newY);
 
                             if (newX == endX && newY == endY)
                             {
                                 MessageBox.Show("Destination found");
                                 // Path found, backtrack to the start
-                                BackTrack.BacktrackPath(this.Dist, startEnd[2], startEnd[3], form);
+
+                                form.Mgs($"The lenfgth of the shortest path is {BackTrack.BacktrackPath(this.Dist, startEnd[2], startEnd[3], form)}");
                                 return;
                             }
 
@@ -352,19 +357,24 @@ namespace A_star
 
     class BackTrack
     {
-        public static void BacktrackPath(Cell[,] cells, int endRow, int endCol, Gridlayout form)
+        public static int BacktrackPath(Cell[,] cells, int endRow, int endCol, Gridlayout form)
         {
+            int pathLength = 0;
             int currRow = endRow;
             int currCol = endCol;
+            form.DrawCell(currRow, currCol, Color.Orange);
 
             while (cells[currRow, currCol].type != Gridlayout.START)
             {
                 int parentRow = cells[currRow, currCol].parent_x;
                 int parentCol = cells[currRow, currCol].parent_y;
-                form.DrawCell(currRow, currCol, parentRow, parentCol, Color.Blue);
+                form.DrawCell(parentRow, parentCol, Color.Orange);
                 currRow = parentRow;
                 currCol = parentCol;
+                pathLength++;
             }
+
+            return pathLength;
         }
     }
     

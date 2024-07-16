@@ -589,20 +589,6 @@ namespace A_star
             BFSGraph bfs = new BFSGraph(Graph.vertices, Graph.edges);
             await bfs.Execute(startEnd, this);
         }
-
-        private async void findShortestPathToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Result.Text = ""; 
-            try
-            {
-                DijkstraGraph dijkstra = new DijkstraGraph(Graph.vertices, Graph.edges);
-                await dijkstra.ExecuteAsync(startEnd, this);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
         /// <summary>
         /// Creates a simple default graph with 9 nodes
         /// </summary>
@@ -704,6 +690,34 @@ namespace A_star
                 return;
             }
 
+        }
+
+        private async void dijksraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Result.Text = "";
+            try
+            {
+                DijkstraGraph dijkstra = new DijkstraGraph(Graph.vertices, Graph.edges);
+                await dijkstra.ExecuteAsync(startEnd, this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void astarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Result.Text = "";
+            try
+            {
+                A_StarGraph dijkstra = new A_StarGraph(Graph.vertices, Graph.edges);
+                await dijkstra.ExecuteAsync(startEnd, this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

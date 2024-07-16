@@ -42,8 +42,6 @@ namespace A_star
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new A_star.DoubleBufferedPanel();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.GridSizeInp = new System.Windows.Forms.ToolStripTextBox();
             this.resizeGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findShortestPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,37 +52,10 @@ namespace A_star
             this.placeStartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.placeEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.panel1 = new A_star.DoubleBufferedPanel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // panel1
-            // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Location = new System.Drawing.Point(26, 41);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(800, 800);
-            this.panel1.TabIndex = 1;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-            this.panel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseClick);
-            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
-            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
-            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.GridSizeInp,
-            this.resizeGridToolStripMenuItem,
-            this.findShortestPathToolStripMenuItem,
-            this.clearPathToolStripMenuItem,
-            this.placeStartToolStripMenuItem,
-            this.placeEndToolStripMenuItem,
-            this.layoutToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(894, 27);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
             // 
             // GridSizeInp
             // 
@@ -158,11 +129,40 @@ namespace A_star
             this.layoutToolStripMenuItem.Text = "Change Layout";
             this.layoutToolStripMenuItem.Click += new System.EventHandler(this.layoutToolStripMenuItem_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.GridSizeInp,
+            this.resizeGridToolStripMenuItem,
+            this.findShortestPathToolStripMenuItem,
+            this.clearPathToolStripMenuItem,
+            this.placeStartToolStripMenuItem,
+            this.placeEndToolStripMenuItem,
+            this.layoutToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(846, 27);
+            this.menuStrip1.TabIndex = 2;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Location = new System.Drawing.Point(26, 41);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(800, 800);
+            this.panel1.TabIndex = 1;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            this.panel1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseClick);
+            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
+            // 
             // Gridlayout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(894, 853);
+            this.ClientSize = new System.Drawing.Size(846, 853);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -179,16 +179,16 @@ namespace A_star
 
         #endregion
         private DoubleBufferedPanel panel1;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripTextBox GridSizeInp;
-        private System.Windows.Forms.ToolStripMenuItem resizeGridToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem findShortestPathToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem clearPathToolStripMenuItem;
-        private ToolStripMenuItem placeStartToolStripMenuItem;
-        private ToolStripMenuItem placeEndToolStripMenuItem;
+        private ToolStripTextBox GridSizeInp;
+        private ToolStripMenuItem resizeGridToolStripMenuItem;
+        private ToolStripMenuItem findShortestPathToolStripMenuItem;
         private ToolStripMenuItem aStToolStripMenuItem;
         private ToolStripMenuItem bFSToolStripMenuItem;
         private ToolStripMenuItem dijkstraToolStripMenuItem;
+        private ToolStripMenuItem clearPathToolStripMenuItem;
+        private ToolStripMenuItem placeStartToolStripMenuItem;
+        private ToolStripMenuItem placeEndToolStripMenuItem;
         private ToolStripMenuItem layoutToolStripMenuItem;
+        private MenuStrip menuStrip1;
     }
 }

@@ -14,10 +14,10 @@ namespace A_star
 {
     public partial class Gridlayout : Form
     {
-        private Bitmap baseBitmap;
         private Bitmap gridBitmap;
         private Bitmap cellBitmap;
         private Bitmap pathBitmap;
+        private Point mousePos = new Point(0, 0);
         private HashSet<(int, int)> obstacles;
         private int squares;
         private int[] startEnd;
@@ -43,7 +43,6 @@ namespace A_star
             int width = panel1.Width;
             int height = panel1.Height;
 
-            baseBitmap = new Bitmap(width, height);
 
             gridBitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             using (Graphics g = Graphics.FromImage(gridBitmap))
@@ -75,6 +74,19 @@ namespace A_star
             }
 
             GridX = GridY = squares;
+
+            var temp = new HashSet<(int, int)>();
+            foreach(var item in obstacles)
+            {
+                if(item.Item1 >= squares || item.Item2 >= squares)
+                {
+                    temp.Add(item);
+                }
+            }
+            obstacles = temp;
+
+            if (startEnd[0] >= squares || startEnd[1] >= squares) startEnd[0] = startEnd[1] = -1;
+            if (startEnd[2] >= squares || startEnd[3] >= squares) startEnd[2] = startEnd[3] = -1;
 
             DrawGrid();
             DrawCells();
@@ -116,10 +128,19 @@ namespace A_star
             Graphics g = e.Graphics;
 
             // Draw images without using 'using' statement
-            g.DrawImage(baseBitmap, 0, 0);
-            g.DrawImage(gridBitmap, 0, 0);
-            g.DrawImage(cellBitmap, 0, 0);
             g.DrawImage(pathBitmap, 0, 0);
+            g.DrawImage(cellBitmap, 0, 0);
+            g.DrawImage(gridBitmap, 0, 0);
+
+            if (!PLACE_OBSTACLE)
+            {
+                g.FillEllipse(new SolidBrush(PLACE_START ? Color.Green : Color.Red), mousePos.X, mousePos.Y, 30, 30);
+            }
+        }
+
+        public void Mgs(string s)
+        {
+            MessageBox.Show(s);
         }
 
         private void panel1_MouseClick(object sender, MouseEventArgs e)
@@ -141,6 +162,8 @@ namespace A_star
 
             int square_top = y / gridSize;
             int square_left = x / gridSize;
+
+            if (square_left >= gridSize || square_top >= gridSize) return;
 
             if (PLACE_OBSTACLE)
             {
@@ -225,11 +248,13 @@ namespace A_star
                 g.Clear(Color.Transparent);
                 Pen pen = new Pen(Color.Blue, 2);
                 int px_per_sq = panel1.Width / squares;
+                panel1.Width = px_per_sq * squares;
+                panel1.Height = panel1.Width;
 
                 for (int i = 0; i <= squares; ++i)
                 {
-                    g.DrawLine(pen, new Point(i * px_per_sq, 0), new Point(i * px_per_sq, panel1.Height));
-                    g.DrawLine(pen, new Point(0, i * px_per_sq), new Point(panel1.Width, i * px_per_sq));
+                    g.DrawLine(pen, new Point((i * px_per_sq), 0), new Point((i * px_per_sq), panel1.Height));
+                    g.DrawLine(pen, new Point(0, (i * px_per_sq)), new Point(panel1.Width, (i * px_per_sq)));
                 }
             }
         }
@@ -240,7 +265,7 @@ namespace A_star
             panel1.Invalidate();
         }
 
-        public void DrawCell(int y, int x, int y1, int x1, Color? color = null)
+        public void DrawCell(/*int y, int x, */int y1, int x1, Color? color = null)
         {
             Color actualColor = color ?? Color.Green;
 
@@ -249,10 +274,13 @@ namespace A_star
             using (Graphics g = Graphics.FromImage(pathBitmap))
             {
                 Pen pen = new Pen(actualColor, Math.Min(10, square_l / 5));
-                g.DrawLine(pen,
-                    new Point(x * square_l + square_l / 2, y * square_l + square_l / 2),
-                    new Point(x1 * square_l + square_l / 2, y1 * square_l + square_l / 2)
-                );
+                //g.DrawLine(pen,
+                //    new Point(x * square_l + square_l / 2, y * square_l + square_l / 2),
+                //    new Point(x1 * square_l + square_l / 2, y1 * square_l + square_l / 2)
+                //);
+
+                g.FillRectangle(new SolidBrush(actualColor), x1 * square_l, y1 * square_l, square_l, square_l);
+
                 pen.Dispose();
             }
             panel1.Invalidate(true);
@@ -314,6 +342,7 @@ namespace A_star
 
         private void panel1_MouseMove(object sender, MouseEventArgs e)
         {
+            mousePos = e.Location;
             if (placingObstacles)
             {
                 ClearPath();
@@ -340,12 +369,13 @@ namespace A_star
                         startEnd[2] = startEnd[3] = -1;
                     }
 
-                    obstacles.Add((square_x, square_y));
+                    if(square_x < gridSquares && square_y < gridSquares) obstacles.Add((square_x, square_y));
                 }
 
                 DrawCells();
-                panel1.Invalidate();
+                
             }
+            panel1.Invalidate();
         }
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)

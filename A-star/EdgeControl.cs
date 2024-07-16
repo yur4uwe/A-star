@@ -71,6 +71,7 @@ namespace A_star
             int width = Math.Max(maxX - minX, MinWidth) + 25;
             int height = Math.Max(maxY - minY, MinWidth) + 25;
             this.Size = new Size(width, height);
+
         }
 
         protected override void OnPaint(PaintEventArgs e)

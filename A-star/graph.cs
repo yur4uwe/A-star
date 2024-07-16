@@ -151,7 +151,97 @@ namespace A_star
 
     class A_StarGraph
     {
-        
+        SortedSet<(double f, int vertex)> OpenList = new SortedSet<(double f, int vertex)>
+            (
+                Comparer<(double f, int vertex)>.Create((a, b) => a.Item1.CompareTo(b.Item1))
+            );
+        (double f, double g, double h, bool visited)[] ClosedList;
+        int[,] adj;
+
+        public A_StarGraph(int vertices, List<Edge> edges)
+        {
+            ClosedList = new (double f, double g, double h, bool visited)[vertices];
+            adj = new int[vertices, vertices];
+
+            for(int i = 0; i < ClosedList.Length; i++)
+            {
+                ClosedList[i].f = Double.PositiveInfinity;
+                ClosedList[i].g = Double.PositiveInfinity;
+                ClosedList[i].h = Double.PositiveInfinity;
+                ClosedList[i].visited = false;
+            }
+
+            for (int i = 0; i < Math.Sqrt(adj.Length); i++)
+            {
+                for (int j = 0; j < Math.Sqrt(adj.Length); j++)
+                {
+                    adj[i, j] = int.MaxValue;
+                }
+            }
+
+            foreach (Edge e in edges)
+            {
+                adj[e.start, e.end] = adj[e.end, e.start] = e.Wieght;
+            }
+        }
+
+        private double GetHVal(int vertex)
+        {
+            int minDist = int.MaxValue;
+
+            for(int i  = 0; i < Math.Sqrt(adj.Length); i++) {
+                if (adj[i, vertex] < minDist) minDist = adj[i, vertex];
+            }
+
+            return minDist;
+        }
+
+        public async Task ExecuteAsync(int[] startEnd, GraphLayout layout)
+        {
+            OpenList.Add((0.0, startEnd[0]));
+
+            ClosedList[startEnd[0]] = (0.0, 0.0, 0.0, true);
+
+            while(OpenList.Count > 0)
+            {
+                var p = OpenList.Min;
+                OpenList.Remove(p);
+                layout.DrawNode(p.vertex);
+
+                for(int i = 0; i < Math.Sqrt(adj.Length); i++) 
+                {
+                    if (adj[p.vertex, i] == int.MaxValue) continue;
+
+                    if (startEnd[1] == i) 
+                    { 
+                        layout.DrawEdge(p.vertex, i);
+                        layout.DrawNode(i);
+                        MessageBox.Show($"destination found. Shortest path length is {ClosedList[p.vertex].g + adj[p.vertex, i]}");
+                        return;
+                    }
+
+                    if (!ClosedList[i].visited)
+                    {
+                        double newG = ClosedList[p.vertex].g + adj[i, p.vertex];
+                        double newH = GetHVal(i);
+                        double newF = newG + newH;
+
+                        if (ClosedList[i].f > newF)
+                        {
+                            OpenList.Add((newF, i));
+                            layout.DrawEdge(i, p.vertex);
+                            layout.DrawNode(i);
+
+                            ClosedList[i].g = newG;
+                            ClosedList[i].f = newF;
+                            ClosedList[i].h = newH;
+
+                            await Task.Delay(20);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     class BFSGraph
