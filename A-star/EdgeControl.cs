@@ -37,6 +37,7 @@ namespace A_star
             this.end = end;
             this.weight = weight;
             DoubleBuffered = true;
+            this.BackColor = EdgeColor;
             this.MouseClick += OnClick;
             SubscribeToNodeEvents();
             CalculateTextSize();
@@ -78,6 +79,8 @@ namespace A_star
         {
             base.OnPaint(e);
 
+            this.BackColor = EdgeColor;
+
             if (this.start == null || this.end == null) return;
 
             // Calculate the positions of the start and end nodes relative to the control
@@ -91,7 +94,7 @@ namespace A_star
             using (Pen pen = new Pen(EdgeColor, 3))
             using (GraphicsPath path = new GraphicsPath())
             {
-                e.Graphics.DrawLine(pen, relativeStartPos, relativeEndPos);
+                //e.Graphics.DrawLine(pen, relativeStartPos, relativeEndPos);
 
                 // Add the line to the path
                 path.AddLine(relativeStartPos, relativeEndPos);
@@ -123,10 +126,8 @@ namespace A_star
                         // Add the string to the path
                         path.AddString(weightText, font.FontFamily, (int)font.Style, font.Size, textPosition, format);
                     }
+                    path.Widen(pen);
                 }
-
-                // Widen the path to include the line and the text
-                path.Widen(new Pen(Color.White, 10));
 
                 // Set the region of the control
                 this.Region = new Region(path);

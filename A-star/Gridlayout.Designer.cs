@@ -53,6 +53,7 @@ namespace A_star
             this.placeEndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.layoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new A_star.DoubleBufferedPanel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -66,7 +67,7 @@ namespace A_star
             // resizeGridToolStripMenuItem
             // 
             this.resizeGridToolStripMenuItem.Name = "resizeGridToolStripMenuItem";
-            this.resizeGridToolStripMenuItem.Size = new System.Drawing.Size(76, 23);
+            this.resizeGridToolStripMenuItem.Size = new System.Drawing.Size(76, 19);
             this.resizeGridToolStripMenuItem.Text = "Resize Grid";
             this.resizeGridToolStripMenuItem.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -77,7 +78,7 @@ namespace A_star
             this.bFSToolStripMenuItem,
             this.dijkstraToolStripMenuItem});
             this.findShortestPathToolStripMenuItem.Name = "findShortestPathToolStripMenuItem";
-            this.findShortestPathToolStripMenuItem.Size = new System.Drawing.Size(115, 23);
+            this.findShortestPathToolStripMenuItem.Size = new System.Drawing.Size(115, 19);
             this.findShortestPathToolStripMenuItem.Text = "Find Shortest Path";
             // 
             // aStToolStripMenuItem
@@ -104,34 +105,35 @@ namespace A_star
             // clearPathToolStripMenuItem
             // 
             this.clearPathToolStripMenuItem.Name = "clearPathToolStripMenuItem";
-            this.clearPathToolStripMenuItem.Size = new System.Drawing.Size(73, 23);
+            this.clearPathToolStripMenuItem.Size = new System.Drawing.Size(73, 19);
             this.clearPathToolStripMenuItem.Text = "Clear Path";
             this.clearPathToolStripMenuItem.Click += new System.EventHandler(this.clearPathBtn_Click);
             // 
             // placeStartToolStripMenuItem
             // 
             this.placeStartToolStripMenuItem.Name = "placeStartToolStripMenuItem";
-            this.placeStartToolStripMenuItem.Size = new System.Drawing.Size(74, 23);
+            this.placeStartToolStripMenuItem.Size = new System.Drawing.Size(74, 19);
             this.placeStartToolStripMenuItem.Text = "Place Start";
             this.placeStartToolStripMenuItem.Click += new System.EventHandler(this.placeStartToolStripMenuItem_Click);
             // 
             // placeEndToolStripMenuItem
             // 
             this.placeEndToolStripMenuItem.Name = "placeEndToolStripMenuItem";
-            this.placeEndToolStripMenuItem.Size = new System.Drawing.Size(70, 23);
+            this.placeEndToolStripMenuItem.Size = new System.Drawing.Size(70, 19);
             this.placeEndToolStripMenuItem.Text = "Place End";
             this.placeEndToolStripMenuItem.Click += new System.EventHandler(this.placeEndToolStripMenuItem_Click);
             // 
             // layoutToolStripMenuItem
             // 
             this.layoutToolStripMenuItem.Name = "layoutToolStripMenuItem";
-            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(99, 23);
+            this.layoutToolStripMenuItem.Size = new System.Drawing.Size(99, 19);
             this.layoutToolStripMenuItem.Text = "Change Layout";
             this.layoutToolStripMenuItem.Click += new System.EventHandler(this.layoutToolStripMenuItem_Click);
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.homeToolStripMenuItem,
             this.GridSizeInp,
             this.resizeGridToolStripMenuItem,
             this.findShortestPathToolStripMenuItem,
@@ -139,11 +141,20 @@ namespace A_star
             this.placeStartToolStripMenuItem,
             this.placeEndToolStripMenuItem,
             this.layoutToolStripMenuItem});
+            this.menuStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(846, 27);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // homeToolStripMenuItem
+            // 
+            this.homeToolStripMenuItem.Image = global::A_star.Properties.Resources._25694;
+            this.homeToolStripMenuItem.Name = "homeToolStripMenuItem";
+            this.homeToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
+            this.homeToolStripMenuItem.ToolTipText = "Home";
+            this.homeToolStripMenuItem.Click += new System.EventHandler(this.homeToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -190,5 +201,6 @@ namespace A_star
         private ToolStripMenuItem placeEndToolStripMenuItem;
         private ToolStripMenuItem layoutToolStripMenuItem;
         private MenuStrip menuStrip1;
+        private ToolStripMenuItem homeToolStripMenuItem;
     }
 }

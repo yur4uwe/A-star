@@ -123,7 +123,7 @@ namespace A_star
                                 cells[newX, newY].parent_x = x;
                                 cells[newX, newY].parent_y = y;
 
-                                await Task.Delay(20);
+                                await Task.Delay(1);
                             }
                         }
                     }
@@ -224,7 +224,7 @@ namespace A_star
                             return;
                         }
 
-                        await Task.Delay(20);
+                        await Task.Delay(1);
                     }
                 }
 
@@ -284,7 +284,7 @@ namespace A_star
             {
                 for (int j = 0; j < COL; j++)
                 {
-                    if (!sptSet[i, j] && Dist[i, j].distance <= min)
+                    if (!sptSet[i, j] && Dist[i, j].distance < min)
                     {
                         min = Dist[i, j].distance;
                         min_index = (i, j);
@@ -307,6 +307,12 @@ namespace A_star
             for (int count = 0; count < ROW * COL - obstacles; count++)
             {
                 var (uX, uY) = MinDistance();
+
+                if(uX < 0 && uY < 0)
+                {
+                    MessageBox.Show("Destination not found");
+                    return;
+                }
 
                 if (uX == -1 && uY == -1) break; // No reachable cell found
 
@@ -342,7 +348,7 @@ namespace A_star
                                 return;
                             }
 
-                            await Task.Delay(20);
+                            await Task.Delay(1);
                         }
                     }
                 }

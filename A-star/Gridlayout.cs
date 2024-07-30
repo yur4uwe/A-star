@@ -151,19 +151,12 @@ namespace A_star
             int x = e.X;
             int y = e.Y;
 
-            int square_l;
-            if (!int.TryParse(GridSizeInp.Text, out square_l) || square_l <= 0)
-            {
-                MessageBox.Show("Please enter a valid positive integer in the text box.");
-                return;
-            }
-
-            int gridSize = panel1.Width / square_l;
+            int gridSize = panel1.Width / squares;
 
             int square_top = y / gridSize;
             int square_left = x / gridSize;
 
-            if (square_left >= gridSize || square_top >= gridSize) return;
+            if (square_left >= squares || square_top >= squares) return;
 
             if (PLACE_OBSTACLE)
             {
@@ -243,18 +236,27 @@ namespace A_star
 
         private void DrawGrid()
         {
+            int maxSize = Math.Min(9 * this.Width / 10, 13 * this.Height / 15); // maximum possible size for the panel within the main window
+            int squareSize = maxSize / squares; // calculate the size of each square
+
+            // Calculate the new size of the panel to ensure it's divisible by the number of squares
+            int newSize = squareSize * squares;
+
+            // Set the size of the panel
+            panel1.Size = new Size(newSize, newSize);
+
+            // Create a new bitmap with the new size
+            gridBitmap = new Bitmap(newSize, newSize);
+
             using (Graphics g = Graphics.FromImage(gridBitmap))
             {
                 g.Clear(Color.Transparent);
                 Pen pen = new Pen(Color.Blue, 2);
-                int px_per_sq = panel1.Width / squares;
-                panel1.Width = px_per_sq * squares;
-                panel1.Height = panel1.Width;
 
                 for (int i = 0; i <= squares; ++i)
                 {
-                    g.DrawLine(pen, new Point((i * px_per_sq), 0), new Point((i * px_per_sq), panel1.Height));
-                    g.DrawLine(pen, new Point(0, (i * px_per_sq)), new Point(panel1.Width, (i * px_per_sq)));
+                    g.DrawLine(pen, new Point(i * squareSize, 0), new Point(i * squareSize, newSize));
+                    g.DrawLine(pen, new Point(0, i * squareSize), new Point(newSize, i * squareSize));
                 }
             }
         }
@@ -265,7 +267,7 @@ namespace A_star
             panel1.Invalidate();
         }
 
-        public void DrawCell(/*int y, int x, */int y1, int x1, Color? color = null)
+        public void DrawCell(int y1, int x1, Color? color = null)
         {
             Color actualColor = color ?? Color.Green;
 
@@ -273,15 +275,7 @@ namespace A_star
 
             using (Graphics g = Graphics.FromImage(pathBitmap))
             {
-                Pen pen = new Pen(actualColor, Math.Min(10, square_l / 5));
-                //g.DrawLine(pen,
-                //    new Point(x * square_l + square_l / 2, y * square_l + square_l / 2),
-                //    new Point(x1 * square_l + square_l / 2, y1 * square_l + square_l / 2)
-                //);
-
                 g.FillRectangle(new SolidBrush(actualColor), x1 * square_l, y1 * square_l, square_l, square_l);
-
-                pen.Dispose();
             }
             panel1.Invalidate(true);
         }
@@ -382,16 +376,24 @@ namespace A_star
         {
             placingObstacles = false;
         }
-    }
 
-    static class Program
-    {
-        [STAThread]
-        static void Main()
+        private void homeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Windows.Forms.Application.EnableVisualStyles();
-            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-            System.Windows.Forms.Application.Run(new Gridlayout());
+            this.Hide();
+            MainMenu main = new MainMenu();
+            main.ShowDialog();
+            this.Close();
         }
     }
+
+    //internal static class Program
+    //{
+    //    [STAThread]
+    //    static void Main()
+    //    {
+    //        System.Windows.Forms.Application.EnableVisualStyles();
+    //        System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+    //        System.Windows.Forms.Application.Run(new Graphlayout());
+    //    }
+    //}
 }

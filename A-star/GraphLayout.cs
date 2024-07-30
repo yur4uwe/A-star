@@ -719,5 +719,13 @@ namespace A_star
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void homeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            MainMenu main = new MainMenu();
+            main.ShowDialog();
+            this.Close();
+        }
     }
 }
